@@ -1,0 +1,49 @@
+version: "3.4"
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    # image: wodby/drupal-php:$PHP_TAG
+    container_name: "${PROJECT_NAME}_php"
+    environment:
+      PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
+      DB_HOST: $DB_HOST
+      DB_USER: $DB_USER
+      DB_PASSWORD: $DB_PASSWORD
+      DB_NAME: $DB_NAME
+      DB_DRIVER: $DB_DRIVER
+    networks:
+      - proxy
+    volumes:
+      - php:/var/www/html
+
+  nginx:
+    image: wodby/nginx:$NGINX_TAG
+    container_name: "${PROJECT_NAME}_nginx"
+    depends_on:
+      - php
+    environment:
+      NGINX_STATIC_OPEN_FILE_CACHE: "off"
+      NGINX_ERROR_LOG_LEVEL: debug
+      NGINX_BACKEND_HOST: php
+      NGINX_SERVER_ROOT: /var/www/html/web
+      NGINX_VHOST_PRESET: $NGINX_VHOST_PRESET
+#      NGINX_DRUPAL_FILE_PROXY_URL: http://example.com
+    env_file:
+      - ./.env
+    volumes:
+      - ./config/sync:/etc/nginx/conf.d
+      - php:/var/www/html
+    ports:
+      - "8080:80"
+    networks:
+      - proxy
+
+volumes:
+  php:
+
+networks:
+  proxy:

@@ -1,6 +1,6 @@
 {
-    "name": "pantheon-systems/example-drops-8-composer",
-    "description": "Install drops-8 with Composer on Pantheon.",
+    "name": "nypl/nypl-drupal",
+    "description": "Install Drupal 8 with Composer. Basis: https://github.com/pantheon-systems/example-drops-8-composer",
     "type": "project",
     "license": "MIT",
     "repositories": [
@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0.8",
+        "php": ">=7.1",
         "composer/installers": "^1.0.20",
         "cweagans/composer-patches": "^1.0",
         "drupal-composer/drupal-scaffold": "^2.0.1",
@@ -19,10 +19,12 @@
         "drupal/console": "^1",
         "drupal/core": "^8.6.15",
         "drush-ops/behat-drush-endpoint": "^9.3",
-        "drush/drush": "~8",
-        "pantheon-systems/quicksilver-pushback": "~1",
+        "drush/drush": "^8.3",
+        "pantheon-systems/quicksilver-pushback": "^1.0",
         "rvtraveller/qs-composer-installer": "^1.1",
+        "vlucas/phpdotenv": "^3.4",
         "webflo/drupal-core-strict": "^8.6.15",
+        "webmozart/path-util": "^2.3",
         "zaporylie/composer-drupal-optimizations": "^1.0"
     },
     "require-dev": {
@@ -43,12 +45,13 @@
     "conflict": {
             "drupal/drupal": "*"
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
         "classmap": [
             "scripts/composer/ScriptHandler.php"
-        ]
+        ],
+        "files": ["load.environment.php"]
     },
     "scripts": {
         "build-assets": [
@@ -65,6 +68,12 @@
         "unit-test": "echo 'No unit test step defined.'",
         "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
         "prepare-for-pantheon": "DrupalProject\\composer\\ScriptHandler::prepareForPantheon",
+        "pre-install-cmd": [
+            "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
+        ],
+        "pre-update-cmd": [
+            "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
+        ],
         "post-install-cmd": [
             "@drupal-scaffold",
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
@@ -81,6 +90,7 @@
         "installer-paths": {
             "web/core": ["type:drupal-core"],
             "web/modules/contrib/{$name}": ["type:drupal-module"],
+            "web/libraries/{$name}": ["type:drupal-library", "type:component"],
             "web/profiles/contrib/{$name}": ["type:drupal-profile"],
             "web/themes/contrib/{$name}": ["type:drupal-theme"],
             "drush/Commands/contrib/{$name}": ["type:drupal-drush"]
@@ -92,11 +102,6 @@
             "export-configuration": "drush config-export --yes"
         },
         "drupal-scaffold": {
-            "source": "https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/{version}/{path}",
-            "includes": [
-                "sites/default/default.services.pantheon.preproduction.yml",
-                "sites/default/settings.pantheon.php"
-            ],
             "excludes": [
                 ".csslintrc",
                 ".editorconfig",
@@ -112,7 +117,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "platform": {
-            "php": "7.0.8"
+            "php": "7.1"
         }
     }
 }
