@@ -43,6 +43,8 @@ class RoboFile extends \Robo\Tasks
     {
         $collection = $this->collectionBuilder();
         $collection->addTask($this->installDrupal());
+        $collection->addTaskList($this->waitForDrupal());
+        $collection->addTaskList($this->startWebServer());
         $collection->addTaskList($this->runUnitTests());
         return $collection->run();
     }
@@ -79,6 +81,7 @@ class RoboFile extends \Robo\Tasks
         $collection->addTaskList($this->downloadDatabase());
         $collection->addTaskList($this->buildEnvironment());
         $collection->addTask($this->waitForDrupal());
+        $collection->addTaskList($this->startWebServer());
         $collection->addTaskList($this->runUpdatePath());
         $collection->addTaskList($this->runBehatTests());
         return $collection->run();
