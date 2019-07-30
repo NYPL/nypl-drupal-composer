@@ -8,7 +8,7 @@ services:
 env:
   global:
     - SIMPLETEST_BASE_URL=http://host.docker.internal:8000
-    - SIMPLETEST_DB_URL=sqlite://tmp/site.sqlite
+    - SIMPLETEST_DB_URL=mysql://tmp/mysql
   matrix:
     - JOB=job:check-coding-standards
     - JOB=job:run-unit-tests

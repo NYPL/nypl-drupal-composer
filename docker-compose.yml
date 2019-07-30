@@ -15,8 +15,6 @@ services:
       DB_PASSWORD: $DB_PASSWORD
       DB_NAME: $DB_NAME
       DB_DRIVER: $DB_DRIVER
-    networks:
-      - proxy
     volumes:
       - php:/var/www/html
 
@@ -39,11 +37,6 @@ services:
       - php:/var/www/html
     ports:
       - "8080:80"
-    networks:
-      - proxy
 
 volumes:
   php:
-
-networks:
-  proxy:

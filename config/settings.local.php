@@ -43,7 +43,7 @@ $databases['default']['default'] = array (
   'prefix' => '',
   'host' => getenv('DB_HOST'),
   'port' => '',
-  'namespace' => 'Drupal\\Core\\Database\\Driver\\pgsql',
+  'namespace' => 'Drupal\\Core\\Database\\Driver\\' . getenv('DB_DRIVER'),
   'driver' => getenv('DB_DRIVER'),
 );
 

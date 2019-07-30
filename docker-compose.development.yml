@@ -35,8 +35,7 @@ services:
       DB_DRIVER: $DB_DRIVER
     volumes:
       - php:/var/www/html
-      - /var/www/html/web
-      - /var/www/html/web/vendor
+      - ./composer.json:/var/www/html/composer.json
 
   nginx:
     image: wodby/nginx:$NGINX_TAG

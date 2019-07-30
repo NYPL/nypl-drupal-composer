@@ -47,6 +47,10 @@ class ScriptHandler
     // Prepare the settings file for installation
     if (!$fs->exists($drupalRoot . '/sites/default/settings.php') && $fs->exists($drupalRoot . '/sites/default/default.settings.php')) {
       $fs->copy($drupalRoot . '/sites/default/default.settings.php', $drupalRoot . '/sites/default/settings.php');
+      // Insert our homegrown settings file if it exists.
+      if ($fs->exists('/tmp/settings.php')) {
+        $fs->copy('/tmp/settings.php', $drupalRoot . '/sites/default/settings.php');
+      }
       // Insert local settings for database connection and local development settings.
       if ($fs->exists('/tmp/settings.local.php')) {
         $fs->copy('/tmp/settings.local.php', $drupalRoot . '/sites/default/settings.local.php');
