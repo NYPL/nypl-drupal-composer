@@ -12,7 +12,7 @@ php:
 env:
   global:
     - COMPOSER_MEMORY_LIMIT=2G
-    - SIMPLETEST_BASE_URL=http://localhost
+    - SIMPLETEST_BASE_URL=http://127.0.0.1:8080
     - SIMPLETEST_DB_URL=mysql://tmp/mysql
   matrix:
     - JOB=job:check-coding-standards
@@ -36,6 +36,7 @@ before_script:
 
 # TODO: integrate with RoboFile task runner.
 script:
+  - drush runserver 127.0.0.1:8080 &
   - vendor/bin/robo $JOB
   # - if [[ $RELEASE = dev ]]; then composer --verbose remove --no-update drupal/console; fi;
   # - if [[ $RELEASE = dev ]]; then composer --verbose require --no-update drupal/core:8.8.x-dev webflo/drupal-core-require-dev:8.8.x-dev; fi;
