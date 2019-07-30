@@ -33,6 +33,7 @@
         "behat/mink": "^1.7",
         "behat/mink-extension": "^2.2",
         "behat/mink-goutte-driver": "^1.2",
+        "consolidation/robo": "^1.0.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
         "drupal/coder": "^8.3.1",
         "drupal/drupal-extension": "^3.1",
