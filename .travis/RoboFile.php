@@ -22,7 +22,7 @@ class RoboFile extends \Robo\Tasks
     /**
      * The website's URL.
      */
-    const DRUPAL_URL = 'http://host.docker.internal:8080';
+    const DRUPAL_URL = 'http://nginx:8080';
 
     /**
      * RoboFile constructor.
