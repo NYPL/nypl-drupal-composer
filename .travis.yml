@@ -12,7 +12,7 @@ php:
 env:
   global:
     - COMPOSER_MEMORY_LIMIT=2G
-    - SIMPLETEST_BASE_URL=http://host.docker.internal:8000
+    - SIMPLETEST_BASE_URL=http://localhost:8000
     - SIMPLETEST_DB_URL=mysql://tmp/mysql
   matrix:
     - JOB=job:check-coding-standards
