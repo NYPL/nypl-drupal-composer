@@ -36,7 +36,7 @@ before_script:
 
 # TODO: integrate with RoboFile task runner.
 script:
-  - drush runserver 127.0.0.1:8080 &
+  - vendor/bin/drush runserver 127.0.0.1:8080 &
   - vendor/bin/robo $JOB
   # - if [[ $RELEASE = dev ]]; then composer --verbose remove --no-update drupal/console; fi;
   # - if [[ $RELEASE = dev ]]; then composer --verbose require --no-update drupal/core:8.8.x-dev webflo/drupal-core-require-dev:8.8.x-dev; fi;
