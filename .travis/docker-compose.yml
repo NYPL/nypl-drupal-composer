@@ -46,7 +46,7 @@ services:
       NGINX_VHOST_PRESET: $NGINX_VHOST_PRESET
 #      NGINX_DRUPAL_FILE_PROXY_URL: http://example.com
     env_file:
-      - ./.env
+      - .travis/.env
     volumes:
       - ./config/sync:/etc/nginx/conf.d
     ports:
