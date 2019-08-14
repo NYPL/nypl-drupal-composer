@@ -2,7 +2,8 @@
 ### GitHub repository .gitignore section
 ###
 .env
-/mysql
+*.enc
+/mysql/
 /web
 /web_old
 

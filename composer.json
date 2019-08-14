@@ -7,6 +7,10 @@
         {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/NYPL/nypl_emulsify"
         }
     ],
     "require": {
@@ -16,11 +20,12 @@
         "drupal-composer/drupal-scaffold": "^2.0.1",
         "drupal/config_direct_save": "^1.0",
         "drupal/config_installer": "^1.0",
-        "drupal/console": "^1",
+        "drupal/console": "1.9.0",
         "drupal/core": "^8.6.15",
         "drupal/token": "^1.5",
         "drush-ops/behat-drush-endpoint": "^9.3",
         "drush/drush": "^8.3",
+        "nypl/nypl_emulsify": "master",
         "pantheon-systems/quicksilver-pushback": "^1.0",
         "rvtraveller/qs-composer-installer": "^1.1",
         "vlucas/phpdotenv": "^3.4",
@@ -41,8 +46,7 @@
         "jcalderonzumba/mink-phantomjs-driver": "^0.3.1",
         "mikey179/vfsstream": "^1.2",
         "phpunit/phpunit": "^6.5",
-        "squizlabs/php_codesniffer": "^3.4.0",
-        "symfony/css-selector": "^2.8"
+        "squizlabs/php_codesniffer": "^3.4.0"
     },
     "conflict": {
             "drupal/drupal": "*"
@@ -79,9 +83,11 @@
         "installer-paths": {
             "web/core": ["type:drupal-core"],
             "web/modules/contrib/{$name}": ["type:drupal-module"],
+            "web/modules/custom/{$name}": ["type:drupal-custom-module"],
             "web/libraries/{$name}": ["type:drupal-library", "type:component"],
             "web/profiles/contrib/{$name}": ["type:drupal-profile"],
             "web/themes/contrib/{$name}": ["type:drupal-theme"],
+            "web/themes/custom/{$name}": ["type:drupal-custom-theme"],
             "drush/Commands/contrib/{$name}": ["type:drupal-drush"]
         },
         "build-env": {

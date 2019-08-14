@@ -14,30 +14,33 @@ env:
     - COMPOSER_MEMORY_LIMIT=2G
     - SIMPLETEST_BASE_URL=http://127.0.0.1:8080
     - SIMPLETEST_DB_URL=mysql://tmp/mysql
+    - NODE_VERSION=7.x
   matrix:
     - JOB=job:check-coding-standards
-    - JOB=job:run-unit-tests
+    # - JOB=job:run-unit-tests
     # - JOB=job:run-behat-tests
 
 before_install:
-  - echo 'sendmail_path = /bin/true' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - phpenv config-rm xdebug.ini
   - composer --verbose self-update --$COMPOSER_CHANNEL
   - composer --version
+  - sudo rm -rf ~/.nvm - curl -sL "https://deb.nodesource.com/setup_${NODE_RELEASE}" | sudo -E bash -
+  - sudo apt-get install -y nodejs
 
 install:
   - composer --verbose validate
   - composer --verbose install
+  - sudo npm install -g gulp-cli
 
 before_script:
+  - bin/disable-php-mail
   - cp .travis/RoboFile.php .
   - cp .travis/.env .
-
+  - cd web/themes/custom/nypl_emulsify
+  - gulp build
 
 # TODO: integrate with RoboFile task runner.
 script:
-  - vendor/bin/drush runserver 127.0.0.1:8080 &
-  - until curl -s 127.0.0.1:8080; do true; done > /dev/null &
   - vendor/bin/robo $JOB
   # - if [[ $RELEASE = dev ]]; then composer --verbose remove --no-update drupal/console; fi;
   # - if [[ $RELEASE = dev ]]; then composer --verbose require --no-update drupal/core:8.8.x-dev webflo/drupal-core-require-dev:8.8.x-dev; fi;
@@ -52,3 +55,16 @@ script:
   # - ./../vendor/bin/phpunit -c core --testsuite unit --exclude-group Composer,DependencyInjection,PageCache,Setup
   # - ./../vendor/bin/drush
   # - if [[ $RELEASE = stable ]]; then ./../vendor/bin/drupal; fi;
+
+after_failure:
+  - if [ -f $HOME/server.log ] ; then echo "Server log:" && cat $HOME/server.log ; fi
+
+after_script:
+  - rm -rf $HOME/server.log
+
+notifications:
+  email:
+    recipients:
+      gregorykallenberg@nypl.org
+    on_success: always
+    on_failure: always
