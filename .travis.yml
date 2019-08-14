@@ -36,7 +36,7 @@ before_script:
   - cp .travis/.env .
   - cd web/themes/custom/nypl_emulsify
   - npm install gulp
-  - gulp build
+  - ./node_modules/gulp/bin/gulp.js build
 
 # TODO: integrate with RoboFile task runner.
 script:
