@@ -30,10 +30,9 @@ before_install:
 install:
   - composer --verbose validate
   - composer --verbose install
-  - sudo npm install -g gulp-cli
+  - npm install -g gulp-cli
 
 before_script:
-  - bin/disable-php-mail
   - cp .travis/RoboFile.php .
   - cp .travis/.env .
   - cd web/themes/custom/nypl_emulsify
