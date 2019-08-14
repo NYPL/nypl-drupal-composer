@@ -34,9 +34,6 @@ install:
 before_script:
   - cp .travis/RoboFile.php .
   - cp .travis/.env .
-  - cd web/themes/custom/nypl_emulsify
-  - npm install
-  - ./node_modules/gulp/bin/gulp.js build
 
 # TODO: integrate with RoboFile task runner.
 script:
@@ -59,6 +56,9 @@ after_failure:
   - if [ -f $HOME/server.log ] ; then echo "Server log:" && cat $HOME/server.log ; fi
 
 after_script:
+  - cd web/themes/custom/nypl_emulsify
+  - npm install
+  - ./node_modules/gulp/bin/gulp.js build
   - rm -rf $HOME/server.log
   - rm -rf $HOME/web/themes/custom/nypl_emulsify/pattern-lab
   - rm -rf $HOME/web/themes/custom/nypl_emulsify/node_modules
