@@ -50,6 +50,10 @@ class ScriptHandler
       // Insert our homegrown settings file if it exists.
       if ($fs->exists('/tmp/settings.php')) {
         $fs->copy('/tmp/settings.php', $drupalRoot . '/sites/default/settings.php');
+        $event->getIO()->write("Copied custom /tmp/settings.php to sites/default");
+      }
+      else {
+        $event->getIO()->write("Failed to copy custom /tmp/settings.php to sites/default");
       }
       // Insert local settings for database connection and local development settings.
       if ($fs->exists('/tmp/settings.local.php')) {
@@ -75,8 +79,10 @@ class ScriptHandler
           'required' => TRUE,
         ],
       ];
-      drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.php');
+      drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.local.php');
       $fs->chmod($drupalRoot . '/sites/default/settings.php', 0666);
+      $fs->chmod($drupalRoot . '/sites/default/settings.local.php', 0666);
+      $fs->chmod($drupalRoot . '/sites/default/services.yml', 0666);
       if ($fs->exists($drupalRoot . '/sites/default/settings.php')) {
         $event->getIO()->write("Created a sites/default/settings.php file with chmod 0666");
       }

@@ -1,0 +1,6 @@
+/web_old
+/config_old
+/.travis
+/mysql
+/mysql-backup
+*.enc
