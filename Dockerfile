@@ -13,9 +13,6 @@ COPY config/cli/drupal-*.ini /usr/local/etc/php/conf.d/
 
 COPY ./ /var/www/html/
 
-ARG USER_GROUP_ID=1000
-ARG USER_ID=1000
-
 # Copy our local settings and services to the file system for ScriptHandler.php checks and placement
 COPY ./config/settings.php /tmp
 COPY ./config/settings.local.php /tmp
@@ -27,6 +24,11 @@ RUN date +%s | sha256sum | base64 | head -c 32 > /usr/local/share/salt.txt
 RUN chmod 0444 /usr/local/share/salt.txt
 RUN chown nginx:www-data /usr/local/share/salt.txt
 RUN COMPOSER_MEMORY_LIMIT=2G composer install --prefer-source --no-interaction --no-dev
+
+# Setup drush and drupal console symlinks and add vendor/bin to PATH
+RUN ln -s /var/www/html/vendor/bin/drush /usr/local/bin/drush
+RUN ln -s /var/www/html/vendor/bin/drupal /usr/local/bin/drupal
+RUN echo "export PATH=/var/www/html/vendor/bin:\$PATH" >> ~/.bash_profile
 
 # Set nginx as the owner/group of the webapp
 RUN chown -R nginx:www-data /var/www/html
