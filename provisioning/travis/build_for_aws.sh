@@ -17,7 +17,7 @@ if [ -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     # Build and push
     IMAGE_NAME=nypldrupal_phpnginx
     LOCAL_TAG_NAME=$IMAGE_NAME:$TRAVIS_BRANCH-latest
-    REMOTE_FULL_URL=$DOCKER_REPO_URL:$TRAVIS_BRANCH-latest
+    REMOTE_FULL_URL=$DOCKER_REPO_URL:latest
 
     docker build --target production --tag $LOCAL_TAG_NAME .
     echo "Pushing $LOCAL_TAG_NAME"
