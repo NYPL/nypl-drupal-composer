@@ -44,6 +44,7 @@ script:
   - ./node_modules/gulp/bin/gulp.js build
 
 after_success:
+  - cd $HOME
   - provisioning/travis/build_for_aws.sh
   - provisioning/travis/deploy_on_aws.sh
 
