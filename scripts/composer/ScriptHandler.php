@@ -58,6 +58,7 @@ class ScriptHandler
       // Insert local settings for database connection and local development settings.
       if ($fs->exists('/tmp/settings.local.php')) {
         $fs->copy('/tmp/settings.local.php', $drupalRoot . '/sites/default/settings.local.php');
+        $fs->chmod($drupalRoot . '/sites/default/settings.local.php', 0666);
         $event->getIO()->write("Copied /tmp/settings.local.php to sites/default");
       }
       else {
@@ -66,6 +67,7 @@ class ScriptHandler
       // Add the basic services.yml based on the default.services.yml file.
       if ($fs->exists('/tmp/services.yml')) {
         $fs->copy('/tmp/services.yml', $drupalRoot . '/sites/default/services.yml');
+        $fs->chmod($drupalRoot . '/sites/default/services.yml', 0666);
         $event->getIO()->write("Copied /tmp/services.yml to sites/default");
       }
       else {
@@ -79,10 +81,8 @@ class ScriptHandler
           'required' => TRUE,
         ],
       ];
-      drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.local.php');
+      drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.php');
       $fs->chmod($drupalRoot . '/sites/default/settings.php', 0666);
-      $fs->chmod($drupalRoot . '/sites/default/settings.local.php', 0666);
-      $fs->chmod($drupalRoot . '/sites/default/services.yml', 0666);
       if ($fs->exists($drupalRoot . '/sites/default/settings.php')) {
         $event->getIO()->write("Created a sites/default/settings.php file with chmod 0666");
       }
