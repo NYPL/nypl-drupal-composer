@@ -39,18 +39,18 @@ before_script:
 
 script:
   - vendor/bin/robo $JOB
+  - cd web/themes/custom/nypl_emulsify
+  - npm install
+  - ./node_modules/gulp/bin/gulp.js build
 
 after_success:
-  - ./provisioning/travis/build_for_aws.sh
-  - ./provisioning/travis/deploy_on_aws.sh
+  - provisioning/travis/build_for_aws.sh
+  - provisioning/travis/deploy_on_aws.sh
 
 after_failure:
   - if [ -f $HOME/server.log ] ; then echo "Server log:" && cat $HOME/server.log ; fi
 
 after_script:
-  - cd web/themes/custom/nypl_emulsify
-  - npm install
-  - ./node_modules/gulp/bin/gulp.js build
   - rm -rf $HOME/server.log
   - rm -rf $HOME/web/themes/custom/nypl_emulsify/pattern-lab
   - rm -rf $HOME/web/themes/custom/nypl_emulsify/node_modules
