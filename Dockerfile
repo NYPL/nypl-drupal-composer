@@ -22,16 +22,12 @@ COPY ./config/services.yml /tmp
 RUN touch /usr/local/share/salt.txt
 RUN date +%s | sha256sum | base64 | head -c 32 > /usr/local/share/salt.txt
 RUN chmod 0444 /usr/local/share/salt.txt
-RUN chown nginx:www-data /usr/local/share/salt.txt
 RUN COMPOSER_MEMORY_LIMIT=2G composer install --prefer-source --no-interaction --no-dev
 
 # Setup drush and drupal console symlinks and add vendor/bin to PATH
 RUN ln -s /var/www/html/vendor/bin/drush /usr/local/bin/drush
 RUN ln -s /var/www/html/vendor/bin/drupal /usr/local/bin/drupal
 RUN echo "export PATH=/var/www/html/vendor/bin:\$PATH" >> ~/.bash_profile
-
-# Set nginx as the owner/group of the webapp
-RUN chown -R nginx:www-data /var/www/html
 
 # Clean up /tmp files
 RUN rm /tmp/*
