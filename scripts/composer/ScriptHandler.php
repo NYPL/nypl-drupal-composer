@@ -25,7 +25,10 @@ class ScriptHandler
   public static function createRequiredFiles(Event $event)
   {
     $fs = new Filesystem();
-    $root = static::getDrupalRoot(getcwd());
+    $drupalFinder = new DrupalFinder();
+    $drupalFinder->locateRoot(getcwd());
+    $drupalRoot = $drupalFinder->getDrupalRoot();
+    $event->getIO()->write("Drupal root identified as: $drupalRoot");
 
     $dirs = [
       'modules',
