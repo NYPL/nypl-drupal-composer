@@ -8,8 +8,11 @@
 namespace DrupalProject\composer;
 
 use Composer\Script\Event;
+use Composer\Semver\Comparator;
+use DrupalFinder\DrupalFinder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Webmozart\PathUtil\Path;
 
 class ScriptHandler
 {
