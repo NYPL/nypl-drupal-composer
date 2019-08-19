@@ -14,9 +14,9 @@ COPY config/cli/drupal-*.ini /usr/local/etc/php/conf.d/
 COPY ./ /var/www/html/
 
 # Copy our local settings and services to the file system for ScriptHandler.php checks and placement
-COPY ./config/settings.php /tmp
-COPY ./config/settings.local.php /tmp
-COPY ./config/services.yml /tmp
+COPY config/settings.php /tmp
+COPY config/settings.local.php /tmp
+COPY config/services.yml /tmp
 
 # Set a random salt and save to a file for Drupal's hash setting.
 RUN touch /usr/local/share/salt.txt
@@ -30,7 +30,7 @@ RUN ln -s /var/www/html/vendor/bin/drupal /usr/local/bin/drupal
 RUN echo "export PATH=/var/www/html/vendor/bin:\$PATH" >> ~/.bash_profile
 
 # Clean up /tmp files
-RUN rm /tmp/*
+# RUN rm /tmp/*
 
 FROM production AS development
 
