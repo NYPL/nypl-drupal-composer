@@ -15,7 +15,6 @@
     ],
     "require": {
         "php": ">=7.2",
-
         "composer/installers": "^1.0.20",
         "cweagans/composer-patches": "^1.0",
         "drupal-composer/drupal-scaffold": "^2.0.1",
@@ -170,7 +169,7 @@
         "bin-dir": "bin/",
         "vendor-dir": "vendor",
         "github-oauth": {
-            "github.com": "5ec76c5a503b5251ef531004728b1d548e8ce6fc"
+
         }
     }
 }
