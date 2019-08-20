@@ -20,7 +20,7 @@ env:
     - REMOTE_IMAGE_URL=491147561046.dkr.ecr.us-east-1.amazonaws.com/nypldrupal_phpnginx
     - secure: U5RJew207zn1HAEn/3HsXbWJegL4gY5pgh3BQlDmAPKAHaMvyE8KsYuw9bNquatrRSM4CCp2B1gpWWuR3odaz8A3wSkF3IGd1hrcHawok9Uo7hy46/kGnFp43nAXu6FXf3MAzNd385wSEdfFKdTuBto/TX8S7bMDWZD8aibqBZLYTxNMiHPXVMhyQXfEyro9x/BjpitqcukGiN55L1OEAeEvfdtzXGC7aeDe0sOu01jC6eC5LD9DCeUlDHBa2SZliYqSbXkRSrvyFcWP32Paa6hY8h3jx/PGmLyUQ0xIKBEKMK+aH69ywHQnGhT3m4unw40xItmG1xDLdMuir0YW1Yn1xyNMzQgnUXpHRSpAM0d4Zcjmf8Vvcmr3CNyby2JtxQF+NyMN4m78dInj7ThI743fIfqz3TM8aJALmNq1IUwNriRQOcWITfdQsHlAZ748qT7EUnZC2iKZiYcdBPc1XulmIav7YFuYjIRk9fAQsvpA5mf3rQz7+KxKrYw/Ww0K5QNB82kcAHcsX+DvDatlk89QuLKraJ4c29O5Gs4IqR6ZRJTN3BjHm9Nv82KmRjaKgKbPblZR78bWWiumV5a6tl5ZxdghF5wvcMpdCUiE5mvY++DkQZ+u4T+IAIg3RqeZpBNG2MRGILt/kMbDfvrqGRDZo7FOUWJlhmhA7QS0H2o=
     # Pantheon variables
-    - PSITE='nypl'
+    - PSITE='nypl-docker'
     - PENV='dev'
     - PHOST='https://$PENV-$PSITE.pantheonsite.io'
     - secure: K0t/NbfaTqSJAUU/U7mSiiZjJsMRwQD+dNKhS7pgAZ5tTPYTTrZzePptx1qvXGVYd5sdVZKwmqbKGv5GiqOiD4BIycaC214pX2inYmSHdGkvA5MMaFU/fMhcYTdVyAkKsKno4ZmnG2K54KSKvyKsIEx89irImUI8NaZPgKNHsc4YPGLLMS/ndXJJjNQjeH+jqnKvvYzSO7DExqs7gTTukRCrcbAGingf7neM8VfCrFdYs1KN6j1or9UEuhvQMsCm9EWE2yYZW8CKlQld1BHfkmSr/ModLpqkrVygM1cT5Lar9cpfGq5/imFZ909p0nqPVdKmCuy+5oh/XIdkpFaLeds3zVxbKD31Gtx0+812aOe9dgw+dA+yMYtxE1Pri0nb2RT34hd73Fj/7WntBGvQ7GSyHtzrfoDhQgw1EzXKI9DjKinEUqHFrUsThcQoiN6jfOPc6RMQfuh6+4L57cS7C8zXObDh5QjC/6sbwLBQ437C906byn8b6hcinYIil6I/8jHcRHBD2PtexdWKJjH1xz0LcOKyPWrpUNjQf7hCwveVHEbvDfkRpeqHZ7VhGic6DSp4+bxLy8II0aG/mfuF4mHKRgonw4EhdKpw5SL14NTzYG/IVxrLI8n1Fjkjof4TRHrOH4snWS1Z2yxhVgejPisaCec6LAYscwWgeg0N3sc=
@@ -53,6 +53,9 @@ script:
   - ./node_modules/gulp/bin/gulp.js build
 
 after_success:
+  - openssl aes-256-cbc -K $encrypted_8a30a4e5a3eb_key -iv $encrypted_8a30a4e5a3eb_iv -in pantheon-hash.txt.enc -out pantheon-hash.txt -d
+  - cp travis-ci-key ~/.ssh/id_rsa
+  - chmod 0600 ~/.ssh/id_rsa
   - cd $TRAVIS_BUILD_DIR
   - provisioning/travis/build_for_aws.sh
   - provisioning/travis/deploy_on_aws.sh
