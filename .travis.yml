@@ -42,7 +42,7 @@ install:
   - composer --verbose install --prefer-dist --no-interaction
 
 before_script:
-  - bin/disable-php-email
+  # - bin/disable-php-email
   - cp .travis/RoboFile.php .
   - cp .travis/.env .
 
