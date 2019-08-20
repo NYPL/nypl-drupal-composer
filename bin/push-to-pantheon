@@ -57,6 +57,7 @@ fi
 # We will allow this to run if the user has already logged in, though.
 if [ -n "$PPASS" ] || [ $LOGGED_IN == 1 ]
 then
+  echo "Pantheon host checking"
   # Dynamic hosts through Pantheon mean constantly checking interactively
   # that we mean to connect to an unknown host. We ignore those here.
   grep -q StrictHostKeyChecking "$HOME/.ssh/config"
@@ -81,6 +82,7 @@ function pantheonpolicy_drush_sitealias_alter(&\$alias_record) {
 __EOF__
 
   # We need to clear the local Drush cache after defining a new policy file
+  echo "Run drush cc drush"
   drush cc drush
 
   # Capture the commit message
@@ -89,6 +91,7 @@ __EOF__
   # If Terminus is not already in the $PATH, then install it.
   if [ -z "$CHECK_TERMINUS" ]
   then
+    echo "Install terminus"
     # We install via Composer rather than using curl to fetch the phar
     # because this way we always get the latest version.
     # n.b. Composer global require does not work here, because Circle CI starts off
@@ -224,7 +227,7 @@ __EOF__
       INSTALL_SITE=true
     fi
   fi
-
+  echo "Run git commands"
   # Push our built files up to Pantheon
   git add --all
   aborterr "'git add --all' failed"
