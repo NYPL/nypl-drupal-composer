@@ -45,8 +45,8 @@ CHECK_TERMINUS="$(which terminus)"
 LOGGED_IN=0
 if [ -n "$CHECK_TERMINUS" ]
 then
-  terminus auth whoami >/dev/null 2>&1
-  terminus auth whoami
+  terminus auth:whoami >/dev/null 2>&1
+  terminus auth:whoami
   [ $? == 0 ] && LOGGED_IN=1
 fi
 
@@ -99,7 +99,7 @@ __EOF__
     # requires 4.6 or later.  We'll make our own location for terminus installs.
     mkdir -p $HOME/terminus
     cd $HOME/terminus
-    composer require katzgrau/klogger:dev-master pantheon-systems/cli
+    composer require katzgrau/klogger:dev-master pantheon-systems/terminus
   fi
 
   if [ $LOGGED_IN == 0 ]
@@ -110,20 +110,13 @@ __EOF__
     # used during login to stdout, which will end up in the log.  It's better
     # to conceal the email address used, to make it harder for a third party
     # to try to log in via a brute-force password-guessing attack.
-    terminus auth login "$PEMAIL" --password="$PPASS" >/dev/null 2>&1
+    terminus auth:login "$PEMAIL" --password="$PPASS" >/dev/null 2>&1
     check "Logged in to Pantheon via Terminus" "Could not log in to Pantheon with Terminus"
   fi
   echo "Check to see if Pantheon site $PSITE exists"
   mkdir -p "$HOME/.drush"
   which terminus
-  PUUID=$(terminus site info --site="$PSITE" --field=id 2>/dev/null)
-  if [ -z "$PUUID" ] && [ -n $AUTOCREATE ]
-  then
-    echo "Creating site $PSITE"
-    terminus sites create --site="$PSITE" --label="$_SITE_NAME"
-    check "Created site $PSITE" "Could not create site $PSITE"
-    PUUID=$(terminus site info --site="$PSITE" --field=id 2>/dev/null)
-  fi
+  PUUID=$(terminus site:info "$PSITE" --field=id 2>/dev/null)
   if [ -z "$PUUID" ]
   then
     echo "Could not get UUID for $PSITE"
@@ -132,14 +125,14 @@ __EOF__
   PUUID=$(echo $PUUID | sed -e 's/^[^:]*: *//')
   echo "UUID for $PSITE is $PUUID"
   echo "Fetch aliases via Terminus"
-  terminus sites aliases --location="$HOME/.drush/$ALIASGROUP.aliases.drushrc.php"
+  terminus aliases --location="$HOME/.drush/$ALIASGROUP.aliases.drushrc.php"
   aborterr "Could not fetch aliases via Terminus"
   echo "Wake up the site $PSITE"
-  terminus site wake --site="$PSITE" --env="$PENV"
+  terminus env:wake "$PSITE"."$PENV"
   check "Site wakeup successful" "Could not wake up site"
 
   # Make sure we are in git mode
-  terminus site set-connection-mode --site="$PSITE" --env="$PENV" --mode=git
+  terminus connection:set "$PSITE"."$PENV" git
   check "Changed connection mode to 'git' for $PSITE $PENV environment" "Could not change connection mode to 'git' for $PSITE $PENV environment"
 
   # Identify the automation user
@@ -189,44 +182,6 @@ __EOF__
   echo "Here's the status change!"
   git status
 
-  # If there is no settings.php file on Pantheon, then we will create one.
-  # n.b. there may be a settings.php file on a CI server if we did a local
-  # test prior to the on-Pantheon test.  If so, we will remove it now, and
-  # replace it with some other settings.php file.
-  chmod +w sites/default
-  rm -f sites/default/settings.php
-  aborterr "Could not remote built settings.php file."
-  if [ ! -f "$WORK_REPO/sites/default/settings.php" ]
-  then
-    cp -f "$WORK_REPO/sites/default/default.settings.php" sites/default/settings.php
-    aborterr "Could not create settings.php with default.settings.php."
-    # settings.php is excluded by our .gitignore, but
-    # we need one on Pantheon in order to use drush si,
-    # so we will add it with `git add -f`.
-    git add -f sites/default/settings.php
-    aborterr "Could not add settings.php"
-    INSTALL_SITE=true
-  else
-    # Maintain existing Pantheon settings.php file.
-    cp "$WORK_REPO/sites/default/settings.php" sites/default/settings.php
-    aborterr "Could not preserve existing settings.php file."
-
-    # Check to see if a pre-installed site is running okay.  If we
-    # can't bootstrap Drupal, then we'll re-install
-    echo "Drush status on the remote site:"
-    drush --strict=0 "$DRUSH_ALIAS" status
-    # Check to see if we are having any bootstrap problems.
-    if [ $? == 0 ]
-    then
-      BOOTSTRAPPED=$(drush  --strict=0 $DRUSH_ALIAS status "Drupal bootstrap" 2>/dev/null)
-    fi
-    if [ $? != 0 ] || [ -z "$BOOTSTRAPPED" ]
-    then
-      # Wipe the site and start over
-      terminus site wipe --site="$PSITE" --env="$PENV" --yes
-      INSTALL_SITE=true
-    fi
-  fi
   echo "Run git commands"
   # Push our built files up to Pantheon
   git add --all
@@ -235,38 +190,6 @@ __EOF__
   aborterr "'git commit' failed"
   git push origin "$BRANCH"
   aborterr "'git push' failed"
-
-  # If we created a settings.php file, then run 'site install'
-  if [ -n "$INSTALL_SITE" ]
-  then
-    # We need to go back to sftp mode to run site-install
-    terminus site set-connection-mode --site="$PSITE" --env="$PENV" --mode=sftp
-    check "Changed connection mode to 'sftp' for $PSITE $PENV environment" "Could not change connection mode to 'sftp' for $PSITE $PENV environment"
-    # Create a new site with site-install.
-    drush --strict=0 $DRUSH_ALIAS -y site-install standard --site-name="$_SITE_NAME Pantheon Test Site" --account-name=admin --account-pass="[REDACTED]"
-    aborterr "Could not install Drupal on Pantheon test site"
-    # Commit the modification made to settings.php and switch back to git mode
-    terminus site code commit --site="$PSITE" --env="$PENV" --message="Settings.php modifications made by site-install" --yes
-    aborterr "Could not commit settings.php changes"
-    terminus site set-connection-mode --site="$PSITE" --env="$PENV" --mode=git
-    aborterr "Could not switch back to git mode"
-    # Because the site password is in the log, generate a new random
-    # password for the site, and change it.  The site owner can use
-    # `drush uli` to log in.
-    if [ -z "$SITEPASS" ]
-    then
-      SITEPASS=$(base64 /dev/urandom | tr -d '/+' | dd bs=32 count=1 2>/dev/null)
-    fi
-    drush --strict=0 $DRUSH_ALIAS user-password admin --password="$SITEPASS"
-    aborterr "Could not reset password on Pantheon test site"
-  else
-    # If the database already exists, just run updatedb to bring it up-to-date
-    # with the code we just pushed.
-    # n.b. If we wanted to re-run our behat tests on the pantheon site, then
-    # we would probably want to install a fresh site every time.
-    drush --strict=0 $DRUSH_ALIAS -y updatedb
-    aborterr "updatedb failed on Pantheon site"
-  fi
 
   # If we were not given the site uri in a behat configuration file,
   # then look it up via Terminus.
