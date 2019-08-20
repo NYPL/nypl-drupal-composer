@@ -8,15 +8,16 @@ ENV PHP_INI_DIR /usr/local/etc/php
 ENV PHP_VERSION 7.2
 ENV LD_LIBRARY_PATH /usr/local/lib
 
-COPY config/drupal-*.ini /usr/local/etc/php/conf.d/
-COPY config/cli/drupal-*.ini /usr/local/etc/php/conf.d/
+COPY ./config/drupal-*.ini /usr/local/etc/php/conf.d/
+COPY ./config/cli/drupal-*.ini /usr/local/etc/php/conf.d/
+COPY ./config/nginx/*.conf /opt/docker/etc/nginx/vhost.common.d/
 
 COPY ./ /var/www/html/
 
 # Copy our local settings and services to the file system for ScriptHandler.php checks and placement
-COPY config/settings.php /tmp
-COPY config/settings.local.php /tmp
-COPY config/services.yml /tmp
+COPY ./config/settings.php /tmp
+COPY ./config/settings.local.php /tmp
+COPY ./config/services.yml /tmp
 
 # Set a random salt and save to a file for Drupal's hash setting.
 RUN touch /usr/local/share/salt.txt
