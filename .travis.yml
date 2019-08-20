@@ -42,7 +42,7 @@ install:
   - composer --verbose install --prefer-dist --no-interaction
 
 before_script:
-  # - bin/disable-php-email
+  - bin/disable-php-email
   - cp .travis/RoboFile.php .
   - cp .travis/.env .
 
@@ -53,9 +53,6 @@ script:
   - ./node_modules/gulp/bin/gulp.js build
 
 after_success:
-  - openssl aes-256-cbc -K $encrypted_8a30a4e5a3eb_key -iv $encrypted_8a30a4e5a3eb_iv -in pantheon-hash.txt.enc -out pantheon-hash.txt -d
-  - cp travis-ci-key ~/.ssh/id_rsa
-  - chmod 0600 ~/.ssh/id_rsa
   - cd $TRAVIS_BUILD_DIR
   - provisioning/travis/build_for_aws.sh
   - provisioning/travis/deploy_on_aws.sh
