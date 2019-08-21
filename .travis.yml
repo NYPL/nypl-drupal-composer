@@ -3,32 +3,31 @@ dist: trusty
 sudo: false
 
 services:
-  - docker
+- docker
 
 php:
-  - 7.2
-  - 7.3
+- 7.2
+- 7.3
 
 env:
   global:
-    - COMPOSER_MEMORY_LIMIT=2G
-    - SIMPLETEST_BASE_URL=http://127.0.0.1:8080
-    - SIMPLETEST_DB_URL=mysql://tmp/mysql
-    # Node version for nypl_emulsify asset build
-    - NODE_VERSION=7.x
-    # TravisCI variables
-    - REMOTE_IMAGE_URL=491147561046.dkr.ecr.us-east-1.amazonaws.com/nypldrupal_phpnginx
-    - secure: U5RJew207zn1HAEn/3HsXbWJegL4gY5pgh3BQlDmAPKAHaMvyE8KsYuw9bNquatrRSM4CCp2B1gpWWuR3odaz8A3wSkF3IGd1hrcHawok9Uo7hy46/kGnFp43nAXu6FXf3MAzNd385wSEdfFKdTuBto/TX8S7bMDWZD8aibqBZLYTxNMiHPXVMhyQXfEyro9x/BjpitqcukGiN55L1OEAeEvfdtzXGC7aeDe0sOu01jC6eC5LD9DCeUlDHBa2SZliYqSbXkRSrvyFcWP32Paa6hY8h3jx/PGmLyUQ0xIKBEKMK+aH69ywHQnGhT3m4unw40xItmG1xDLdMuir0YW1Yn1xyNMzQgnUXpHRSpAM0d4Zcjmf8Vvcmr3CNyby2JtxQF+NyMN4m78dInj7ThI743fIfqz3TM8aJALmNq1IUwNriRQOcWITfdQsHlAZ748qT7EUnZC2iKZiYcdBPc1XulmIav7YFuYjIRk9fAQsvpA5mf3rQz7+KxKrYw/Ww0K5QNB82kcAHcsX+DvDatlk89QuLKraJ4c29O5Gs4IqR6ZRJTN3BjHm9Nv82KmRjaKgKbPblZR78bWWiumV5a6tl5ZxdghF5wvcMpdCUiE5mvY++DkQZ+u4T+IAIg3RqeZpBNG2MRGILt/kMbDfvrqGRDZo7FOUWJlhmhA7QS0H2o=
-    # Pantheon variables
-    - PSITE='nypl-docker'
-    - PENV='dev'
-    - PHOST='https://$PENV-$PSITE.pantheonsite.io'
-    - secure: K0t/NbfaTqSJAUU/U7mSiiZjJsMRwQD+dNKhS7pgAZ5tTPYTTrZzePptx1qvXGVYd5sdVZKwmqbKGv5GiqOiD4BIycaC214pX2inYmSHdGkvA5MMaFU/fMhcYTdVyAkKsKno4ZmnG2K54KSKvyKsIEx89irImUI8NaZPgKNHsc4YPGLLMS/ndXJJjNQjeH+jqnKvvYzSO7DExqs7gTTukRCrcbAGingf7neM8VfCrFdYs1KN6j1or9UEuhvQMsCm9EWE2yYZW8CKlQld1BHfkmSr/ModLpqkrVygM1cT5Lar9cpfGq5/imFZ909p0nqPVdKmCuy+5oh/XIdkpFaLeds3zVxbKD31Gtx0+812aOe9dgw+dA+yMYtxE1Pri0nb2RT34hd73Fj/7WntBGvQ7GSyHtzrfoDhQgw1EzXKI9DjKinEUqHFrUsThcQoiN6jfOPc6RMQfuh6+4L57cS7C8zXObDh5QjC/6sbwLBQ437C906byn8b6hcinYIil6I/8jHcRHBD2PtexdWKJjH1xz0LcOKyPWrpUNjQf7hCwveVHEbvDfkRpeqHZ7VhGic6DSp4+bxLy8II0aG/mfuF4mHKRgonw4EhdKpw5SL14NTzYG/IVxrLI8n1Fjkjof4TRHrOH4snWS1Z2yxhVgejPisaCec6LAYscwWgeg0N3sc=
-    - secure: Hgn3w868MsHHQkqNAqWMNf1zuYjB2X913ttsPLDSPGZY4501c1OEEOd/ttgW6RqujdiqtIo2P8dWTax7/fFQ+2/AyxeFu5XYIlf/texYgcFZhDjfZ1aOTT8PP91ImVGN3k47JKi+F/P1ZkgTZcoCmCLgz+XmpcPSfaecWQH/n+F0abkWNywLjEZo6vMluXwgcgzNM7Rs4jhMvWbhQrXd1NUE36lym1H/J6KZ+ZInKa/3ENGFWendLnIh2X/EW3vYWJIk7/w6lI8YS0R1kUc6Np8pgLJuM7Tuj85lH9SLRTG/8vQa06FgYrUQlGasXISqqo/yd/kdtbVfmsOJSvxifpWQfjti6Roore2jOxSMFZlHasQ5ex8MgtD/ET7K97YxVhNOjLXjuDnUtUd7tGkJAgJYOkwQw+/b5wp0VWN4Mcx42r0rzSmN4PaXkxZILUfEin0/gvPigLN/d9LEci6jNIvZyIH/i8ayXKXSjj1E6zlcLx7e6mn9+vLwRKwj8Az3CUE3tk1oOyTaJD+eh3m2wLV5feVSn0RgXBD9DSFFfwvLd84VEUFRe1WUNpBE7g+u2HAFUd79DvMNdaXpCQYIfVMAGOKOVxE2K3Vdwc84t9XGzbglm2wUq2Aj2goxWzONcSOpY1FRZJUO5P49hpSpexwBGlRdTfK2vsG02luT42A=
+  - COMPOSER_MEMORY_LIMIT=2G
+  - SIMPLETEST_BASE_URL=http://127.0.0.1:8080
+  - SIMPLETEST_DB_URL=mysql://tmp/mysql
+  # Node version for nypl_emulsify asset build
+  - NODE_VERSION=7.x
+  # Travis variables for AWS
+  - REMOTE_IMAGE_URL=491147561046.dkr.ecr.us-east-1.amazonaws.com/nypldrupal_phpnginx
+  - secure: U5RJew207zn1HAEn/3HsXbWJegL4gY5pgh3BQlDmAPKAHaMvyE8KsYuw9bNquatrRSM4CCp2B1gpWWuR3odaz8A3wSkF3IGd1hrcHawok9Uo7hy46/kGnFp43nAXu6FXf3MAzNd385wSEdfFKdTuBto/TX8S7bMDWZD8aibqBZLYTxNMiHPXVMhyQXfEyro9x/BjpitqcukGiN55L1OEAeEvfdtzXGC7aeDe0sOu01jC6eC5LD9DCeUlDHBa2SZliYqSbXkRSrvyFcWP32Paa6hY8h3jx/PGmLyUQ0xIKBEKMK+aH69ywHQnGhT3m4unw40xItmG1xDLdMuir0YW1Yn1xyNMzQgnUXpHRSpAM0d4Zcjmf8Vvcmr3CNyby2JtxQF+NyMN4m78dInj7ThI743fIfqz3TM8aJALmNq1IUwNriRQOcWITfdQsHlAZ748qT7EUnZC2iKZiYcdBPc1XulmIav7YFuYjIRk9fAQsvpA5mf3rQz7+KxKrYw/Ww0K5QNB82kcAHcsX+DvDatlk89QuLKraJ4c29O5Gs4IqR6ZRJTN3BjHm9Nv82KmRjaKgKbPblZR78bWWiumV5a6tl5ZxdghF5wvcMpdCUiE5mvY++DkQZ+u4T+IAIg3RqeZpBNG2MRGILt/kMbDfvrqGRDZo7FOUWJlhmhA7QS0H2o=
+  # Travis variables for Pantheon
+  - PSITE='nypl-docker'
+  - PENV='dev'
+  - PHOST='https://$PENV-$PSITE.pantheonsite.io'
+  - secure: gbxvuNqRsdIOhvI8jBW8neBuKrcwXDcDIwwMSZ5CgiI32Qcp2waUFkqR/j8ShMADwA6F3RWUaocdL+sq/RkPdC4JvhG6L0jdY8705dF7JVzvPxStLqhX3UL1Lcx/g/dlOzkCJECp9cZWl6wHzdCLzP8tMr89Ybltf9fgigZNwRFEkbYbHfI3Pxwy9Ss9nET2wdGQEg0YzJe+0g74ZIXjolP9G7tJ42N3q42s9N9k4WmfDaM+TOeM6ay252w08NgBIVvfyyGOLUvh6hw5FjEDI7vdeLF1sh/7ZmTMz3rRR1wu+k6474kOnxOw6REGxoMtlqii3yxEn6mbuM5skGSZdTQod05rvhl3FOMJKLhxmkyNB3th+YTsdRJRCOUzf9o2euaszskw/uvc+rrCC0ePK0C9NrHQNA0Qh2BATJfwuEP4zJkH+WLmLxSEG+mGCgNZbLGKKuTvqkAa6c8P+PulQn6mKUBG6KZc8nVFa1Hj0KbleYk1+CrjUAuVTGrma7nOxamP8pr0/P34+8BiZryuDP3r+dUzeCVkz3Fx8prqWaPST/NB1xywNO5zr4bO2dsp7iIHQGxHC0gFYYZJNBRtNeiTT8EEm2KVdhosB98p5rEuALwprykqkcBxVfokt2iREd5MgtEwLYemSBs+O1nyqCAh+4j9TUnIHv9h1vMteeo=
   matrix:
-    - JOB=job:check-coding-standards
-    # - JOB=job:run-unit-tests
-    # - JOB=job:run-behat-tests
+  - JOB=job:check-coding-standards
+  # - JOB=job:run-unit-tests
+  # - JOB=job:run-behat-tests
 
 before_install:
   - phpenv config-rm xdebug.ini
@@ -47,10 +46,10 @@ before_script:
   - cp .travis/.env .
 
 script:
-  - $TRAVIS_BUILD_DIR/vendor/bin/robo $JOB
+  - "$TRAVIS_BUILD_DIR/vendor/bin/robo $JOB"
   - cd web/themes/custom/nypl_emulsify
   - npm install
-  - ./node_modules/gulp/bin/gulp.js build
+  - "./node_modules/gulp/bin/gulp.js build"
 
 after_success:
   - cd $TRAVIS_BUILD_DIR
@@ -68,7 +67,6 @@ after_script:
 
 notifications:
   email:
-    recipients:
-      gregorykallenberg@nypl.org
+    recipients: gregorykallenberg@nypl.org
     on_success: always
     on_failure: always
