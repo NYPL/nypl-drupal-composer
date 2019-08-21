@@ -177,6 +177,8 @@ __EOF__
 
   # Output of the diff vs upstream.
   cd "$DRUPAL_ROOT"
+  # Use TravisCI .gitignore to ensure built artifacts are sent to Pantheon
+  cp .travis/.gitignore $DRUPAL_ROOT
   echo "Here's the status change!"
   git status
 
