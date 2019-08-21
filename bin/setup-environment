@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROJECT_BASE_DIR="`cd -P -- "$SELF_DIRNAME/.." && pwd -P`"
-DRUPAL_ROOT="$PROJECT_BASE_DIR/web"
+DRUPAL_ROOT="$PROJECT_BASE_DIR"
 for location in docroot htdocs drupal code .. ; do
   if [ ! -d "$DRUPAL_ROOT" ] && [ -d "$PROJECT_BASE_DIR/$location/sites" ] && [ -f "$PROJECT_BASE_DIR/$location/index.php" ]
   then
