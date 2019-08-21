@@ -6,9 +6,6 @@
 .env
 travis-ci-key
 /mysql/
-/web
-/web_old
-/config_old
 
 ###
 ### Pantheon site .gitignore section
