@@ -4,8 +4,6 @@
 if [ -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   # Deploy only if we're testing the master branch
   if [ "$TRAVIS_BRANCH" == "pantheon" ]; then
-    export PPASS=$PPASS
-    export PEMAIL=$PEMAIL
     echo "Deploying $TRAVIS_BRANCH"
     bash $TRAVIS_BUILD_DIR/bin/push-to-pantheon
   else
