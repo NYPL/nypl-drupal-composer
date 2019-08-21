@@ -198,7 +198,4 @@ __EOF__
     SITE_URI=$(drush --strict=0 sa $DRUSH_ALIAS --format=csv --fields=uri 2>/dev/null)
     aborterr "Could not get URI for $DRUSH_ALIAS"
   fi
-
-  # Try to curl the homepage, to give the system time to spin up
-  curl --max-time 30 $SITE_URI &>/dev/null
 fi
