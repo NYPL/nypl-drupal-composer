@@ -180,15 +180,15 @@ __EOF__
   # Use TravisCI .gitignore to ensure built artifacts are sent to Pantheon
   cp .travis/.gitignore $DRUPAL_ROOT
   echo "Here's the status change!"
-  git status
+  git status >> $WORK_REPO/git-status.txt
 
   echo "Run git commands"
   # Push our built files up to Pantheon
-  git add --all
+  git add --all >> $WORK_REPO/git-add.txt
   aborterr "'git add --all' failed"
   git commit -a -m "Built by CI: '$CI_COMMIT_MSG'"
   aborterr "'git commit' failed"
-  git push origin "$BRANCH"
+  git push origin "$BRANCH" >> $WORK_REPO/git-push.txt
   aborterr "'git push' failed"
 
   # If we were not given the site uri in a behat configuration file,
