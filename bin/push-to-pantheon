@@ -18,10 +18,8 @@
 #
 #   SITE_NAME:     The human-readable name of the site to give to site-install.
 #                  Optional. Defaults to $PSITE.
-#   PEMAIL:        The email address to log on to Pantheon with.
-#                  Optional. Alternately, use `terminus auth login` first.
-#   PPASS:         The password to log on to Pantheon with.
-#                  Optional. Alternately, use `terminus auth login` first.
+#   MACHINE_TOKEN: The machine token associated with the Pantheon account.
+#                  Optional.
 #   SITEPASS:      The password that should be set on the test site.
 #                  Optional. Defaults to a random string (use `drush uli`).
 #   CI_BOT_EMAIL:  The email address to use in the git commit attribution
@@ -50,12 +48,12 @@ then
   [ $? == 0 ] && LOGGED_IN=1
 fi
 
-# Do not attempt to push the site up to Pantheon unless the PPASS
+# Do not attempt to push the site up to Pantheon unless the MACHINE_TOKEN
 # environment variable is set.  If we receive a PR from an external
 # repository, then the secure environment variables will not be set;
 # if we test PRs, we cannot send them to Pantheon in this instance.
 # We will allow this to run if the user has already logged in, though.
-if [ -n "$PPASS" ] || [ $LOGGED_IN == 1 ]
+if [ -n "$MACHINE_TOKEN" ] || [ $LOGGED_IN == 1 ]
 then
   echo "Pantheon host checking"
   # Dynamic hosts through Pantheon mean constantly checking interactively
@@ -110,7 +108,7 @@ __EOF__
     # used during login to stdout, which will end up in the log.  It's better
     # to conceal the email address used, to make it harder for a third party
     # to try to log in via a brute-force password-guessing attack.
-    terminus auth:login "$PEMAIL" --password="$PPASS" >/dev/null 2>&1
+    terminus auth:login --machine-token=$MACHINE_TOKEN >/dev/null 2>&1
     check "Logged in to Pantheon via Terminus" "Could not log in to Pantheon with Terminus"
   fi
   echo "Check to see if Pantheon site $PSITE exists"
