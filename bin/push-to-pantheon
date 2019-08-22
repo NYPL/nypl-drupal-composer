@@ -115,6 +115,13 @@ __EOF__
   mkdir -p "$HOME/.drush"
   which terminus
   PUUID=$(terminus site:info "$PSITE" --field=id 2>/dev/null)
+  if [ -z "$PUUID" ] && [ -n $AUTOCREATE ]
+  then
+    echo "Creating site $PSITE"
+    terminus site:create $PSITE $_SITE_NAME empty
+    check "Created site $PSITE" "Could not create site $PSITE"
+    PUUID=$(terminus site info --site="$PSITE" --field=id 2>/dev/null)
+  fi
   if [ -z "$PUUID" ]
   then
     echo "Could not get UUID for $PSITE"
@@ -154,7 +161,7 @@ __EOF__
   REPO="ssh://codeserver.dev.$PUUID@codeserver.dev.$PUUID.drush.in:2222/~/repository.git"
   mkdir -p "$(basename $WORK_REPO)"
   rm -rf "$WORK_REPO"
-  git clone --depth 1 --branch "$BRANCH" "$REPO" "$WORK_REPO"
+  git clone --depth 1 --branch "$BRANCH" "$REPO" "$WORK_REPO" >> $HOME/git-clone.log
   check "git clone successful" "Could not clone repository from $REPO"
 
   # Get rid of any .git directories created by composer
@@ -179,17 +186,61 @@ __EOF__
   cd "$DRUPAL_ROOT"
   # Use TravisCI .gitignore to ensure built artifacts are sent to Pantheon
   cp .travis/.gitignore $DRUPAL_ROOT
-  echo "Here's the status change!"
-  git status >> $WORK_REPO/git-status.txt
+  echo "Log the status change"
+  git status >> $HOME/git-status.log
+
+# Pantheon builds should not overwrite the settings.php or settings.local.php
+# files that site creation generates. ScriptsHandler.php is run by composer to
+# initialize these files for NYPL's infrastructure so they should be removed
+# prior to any git commands are run to alter the repository.
+  rm "$DRUPAL_ROOT/web/sites/default/settings.php sites/default/settings.local.php"
+
+  if [ ! -f "$WORK_REPO/sites/default/settings.php" ]
+  then
+    INSTALL_SITE=true
+  else
+    # Maintain existing Pantheon settings.php file.
+    cp "$WORK_REPO/sites/default/settings.php" sites/default/settings.php
+    cp "$WORK_REPO/sites/default/settings.local.php" sites/default/settings.local.php
+    cp "$WORK_REPO/sites/default/settings.pantheon.php" sites/default/settings.pantheon.php
+    aborterr "Could not preserve existing settings files."
+
+    # Check to see if a pre-installed site is running okay.  If we
+    # can't bootstrap Drupal, then we'll re-install
+    echo "Drush status on the remote site:"
+    terminus drush $PSITE.$PENV -- --strict=0 status
+    # Check to see if we are having any bootstrap problems.
+    if [ $? == 0 ]
+    then
+      BOOTSTRAPPED=$(terminus drush $PSITE.$PENV -- --strict=0 status "Drupal bootstrap" 2>/dev/null)
+    fi
+    if [ $? != 0 ] || [ -z "$BOOTSTRAPPED" ]
+    then
+      INSTALL_SITE=true
+    fi
+  fi
 
   echo "Run git commands"
   # Push our built files up to Pantheon
-  git add --all >> $WORK_REPO/git-add.txt
+  git add --all >> $HOME/git-add.log
   aborterr "'git add --all' failed"
   git commit -a -m "Built by CI: '$CI_COMMIT_MSG'"
   aborterr "'git commit' failed"
-  git push origin "$BRANCH" >> $WORK_REPO/git-push.txt
+  git push origin "$BRANCH" >> $HOME/git-push.txt
   aborterr "'git push' failed"
+
+  if [ -n "$INSTALL_SITE" ]
+  then
+      # Install Drupal via Terminus
+      terminus drush $PSITE.$PENV -- site-install -y
+  else
+    # If the database already exists, just run updatedb to bring it up-to-date
+    # with the code we just pushed.
+    # n.b. If we wanted to re-run our behat tests on the pantheon site, then
+    # we would probably want to install a fresh site every time.
+    terminus drush $PSITE.$PENV -- updatedb -y
+    aborterr "updatedb failed on Pantheon site"
+  fi
 
   # If we were not given the site uri in a behat configuration file,
   # then look it up via Terminus.
