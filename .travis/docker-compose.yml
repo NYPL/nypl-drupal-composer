@@ -32,6 +32,8 @@ services:
       DB_PASSWORD: $DB_PASSWORD
       DB_NAME: $DB_NAME
       DB_DRIVER: $DB_DRIVER
+    volumes:
+      - ./:/var/www/html
 
   nginx:
     image: wodby/nginx:$NGINX_TAG
@@ -49,6 +51,7 @@ services:
       - ./.env
     volumes:
       - ./config/sync:/etc/nginx/conf.d
+      - php:/var/www/html
     ports:
       - "8080:80"
     labels:
@@ -83,3 +86,6 @@ services:
       - '4444:4444'
     volumes:
       - /dev/shm:/dev/shm
+
+volumes:
+  php:
