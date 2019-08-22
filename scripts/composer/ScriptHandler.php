@@ -71,7 +71,7 @@ class ScriptHandler
         $event->getIO()->write("Copied /tmp/services.yml to $drupalRoot/sites/default");
       }
       else {
-        $event->getIO()->write("Failed to copy /tmp/services.yml to sites/default");
+        $event->getIO()->write("Failed to copy /tmp/services.yml to $drupalRoot/sites/default");
       }
       require_once $drupalRoot . '/core/includes/bootstrap.inc';
       require_once $drupalRoot . '/core/includes/install.inc';
