@@ -50,7 +50,7 @@ class ScriptHandler
       // Insert our homegrown settings file if it exists.
       if ($fs->exists('/tmp/settings.php')) {
         $fs->copy('/tmp/settings.php', $drupalRoot . '/sites/default/settings.php');
-        $event->getIO()->write("Copied custom /tmp/settings.php to sites/default");
+        $event->getIO()->write("Copied custom /tmp/settings.php to $drupalRoot/sites/default");
       }
       else {
         $event->getIO()->write("Failed to copy custom /tmp/settings.php to sites/default");
@@ -59,16 +59,16 @@ class ScriptHandler
       if ($fs->exists('/tmp/settings.local.php')) {
         $fs->copy('/tmp/settings.local.php', $drupalRoot . '/sites/default/settings.local.php');
         $fs->chmod($drupalRoot . '/sites/default/settings.local.php', 0666);
-        $event->getIO()->write("Copied /tmp/settings.local.php to sites/default");
+        $event->getIO()->write("Copied /tmp/settings.local.php to $drupalRoot/sites/default");
       }
       else {
-        $event->getIO()->write("Failed to copy /tmp/settings.local.php to sites/default");
+        $event->getIO()->write("Failed to copy /tmp/settings.local.php to $drupalRoot/sites/default");
       }
       // Add the basic services.yml based on the default.services.yml file.
       if ($fs->exists('/tmp/services.yml')) {
         $fs->copy('/tmp/services.yml', $drupalRoot . '/sites/default/services.yml');
         $fs->chmod($drupalRoot . '/sites/default/services.yml', 0666);
-        $event->getIO()->write("Copied /tmp/services.yml to sites/default");
+        $event->getIO()->write("Copied /tmp/services.yml to $drupalRoot/sites/default");
       }
       else {
         $event->getIO()->write("Failed to copy /tmp/services.yml to sites/default");
