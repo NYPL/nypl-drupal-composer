@@ -10,7 +10,7 @@ ENV LD_LIBRARY_PATH /usr/local/lib
 
 COPY ./config/drupal-*.ini /usr/local/etc/php/conf.d/
 COPY ./config/cli/drupal-*.ini /usr/local/etc/php/conf.d/
-COPY ./config/nginx/*.conf /opt/docker/etc/nginx/vhost.common.d/
+# COPY ./config/nginx/*.conf /opt/docker/etc/nginx/vhost.common.d/
 
 COPY ./ /var/www/html/
 
