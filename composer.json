@@ -71,7 +71,7 @@
         "drupal/video_embed_field": "^2.1",
         "drush-ops/behat-drush-endpoint": "^9.3",
         "drush/drush": "^9.7.1",
-        "nypl/nypl_emulsify": "master",
+        "nypl/nypl_emulsify": "dev-master",
         "pantheon-systems/quicksilver-pushback": "~1",
         "rvtraveller/qs-composer-installer": "^1.1",
         "select2/select2": "^4.0",
