@@ -42,7 +42,7 @@ before_install:
 
 install:
   - composer --verbose validate
-  - composer --verbose install --prefer-dist --no-interaction
+  - composer install --prefer-dist --no-interaction -q
 
 before_script:
   - bin/disable-php-email
@@ -65,7 +65,9 @@ after_failure:
   - if [ -f $HOME/server.log ] ; then echo "Server log:" && cat $HOME/server.log ; fi
 
 after_script:
-  - rm -rf $HOME/server.log
+  - rm -f $TRAVIS_BUILD_DIR/.env
+  - rm -f $TRAVIS_BUILD_DIR/Robofile.php
+  - rm -f $HOME/server.log
   - rm -rf $HOME/web/themes/custom/nypl_emulsify/pattern-lab
   - rm -rf $HOME/web/themes/custom/nypl_emulsify/node_modules
 

@@ -193,7 +193,8 @@ __EOF__
 # files that site creation generates. ScriptsHandler.php is run by composer to
 # initialize these files for NYPL's infrastructure so they should be removed
 # prior to any git commands are run to alter the repository.
-  rm "$DRUPAL_ROOT/web/sites/default/settings.php sites/default/settings.local.php"
+  chmod +w web/sites/default
+  rm -f web/sites/default/settings.php web/sites/default/settings.local.php
 
   if [ ! -f "$WORK_REPO/sites/default/settings.php" ]
   then
@@ -224,7 +225,7 @@ __EOF__
   # Push our built files up to Pantheon
   git add --all >> $HOME/git-add.log
   aborterr "'git add --all' failed"
-  git commit -a -m "Built by CI: '$CI_COMMIT_MSG'"
+  git commit -a -m "Built by CI: '$CI_COMMIT_MSG'" >> $HOME/git-commit.txt
   aborterr "'git commit' failed"
   git push origin "$BRANCH" >> $HOME/git-push.txt
   aborterr "'git push' failed"
