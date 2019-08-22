@@ -34,6 +34,7 @@ before_install:
   - phpenv config-rm xdebug.ini
   - composer --verbose self-update --$COMPOSER_CHANNEL
   - composer --version
+  - composer clear-cache
   - sudo rm -rf ~/.nvm - curl -sL "https://deb.nodesource.com/setup_${NODE_RELEASE}" | sudo -E bash -
   - sudo apt-get install -y nodejs
 
