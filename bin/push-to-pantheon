@@ -200,7 +200,7 @@ __EOF__
   then
     INSTALL_SITE=true
   else
-    # Maintain existing Pantheon settings.php file.
+    # Maintain existing Pantheon settings.php files.
     cp "$WORK_REPO/sites/default/settings.php" sites/default/settings.php
     cp "$WORK_REPO/sites/default/settings.local.php" sites/default/settings.local.php
     cp "$WORK_REPO/sites/default/settings.pantheon.php" sites/default/settings.pantheon.php
