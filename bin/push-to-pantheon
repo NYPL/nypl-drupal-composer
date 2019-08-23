@@ -189,29 +189,6 @@ __EOF__
   echo "Log the status change"
   git status >> $HOME/git-status.log
 
-# Pantheon builds should not overwrite the settings.php or settings.local.php
-# files that site creation generates. ScriptsHandler.php is run by composer to
-# initialize these files for NYPL's infrastructure so they should be removed
-# prior to any git commands are run to alter the repository.
-  chmod +w web/sites/default
-  rm -f web/sites/default/settings.php web/sites/default/settings.local.php
-
-  if [ ! -f "$WORK_REPO/sites/default/settings.php" ]
-  then
-    INSTALL_SITE=true
-  else
-    # Maintain existing Pantheon settings.php files.
-    cp "$WORK_REPO/sites/default/settings.php" sites/default/settings.php
-    cp "$WORK_REPO/sites/default/settings.local.php" sites/default/settings.local.php
-    cp "$WORK_REPO/sites/default/settings.pantheon.php" sites/default/settings.pantheon.php
-    aborterr "Could not preserve existing settings files."
-
-    # Check to see if a pre-installed site is running okay.  If we
-    # can't bootstrap Drupal, then we'll re-install
-    echo "Drush status on the remote site:"
-    terminus drush $PSITE.$PENV -- --strict=0 status
-  fi
-
   echo "Run git commands"
   # Push our built files up to Pantheon
   git add --all >> $HOME/git-add.log
@@ -221,24 +198,5 @@ __EOF__
   git push origin "$BRANCH" >> $HOME/git-push.txt
   aborterr "'git push' failed"
 
-  if [ -n "$INSTALL_SITE" ]
-  then
-      # Install Drupal via Terminus
-      terminus drush $PSITE.$PENV -- site-install -y
-  else
-    # If the database already exists, just run updatedb to bring it up-to-date
-    # with the code we just pushed.
-    # n.b. If we wanted to re-run our behat tests on the pantheon site, then
-    # we would probably want to install a fresh site every time.
-    terminus drush $PSITE.$PENV -- updatedb -y
-    aborterr "updatedb failed on Pantheon site"
-  fi
-
-  # If we were not given the site uri in a behat configuration file,
-  # then look it up via Terminus.
-  if [ -n "$SITE_URI" ]
-  then
-    SITE_URI=$(drush --strict=0 sa $DRUSH_ALIAS --format=csv --fields=uri 2>/dev/null)
-    aborterr "Could not get URI for $DRUSH_ALIAS"
-  fi
+  terminus drush $PSITE.$PENV -- updatedb -y
 fi
