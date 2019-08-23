@@ -210,15 +210,6 @@ __EOF__
     # can't bootstrap Drupal, then we'll re-install
     echo "Drush status on the remote site:"
     terminus drush $PSITE.$PENV -- --strict=0 status
-    # Check to see if we are having any bootstrap problems.
-    if [ $? == 0 ]
-    then
-      BOOTSTRAPPED=$(terminus drush $PSITE.$PENV -- --strict=0 status "Drupal bootstrap" 2>/dev/null)
-    fi
-    if [ $? != 0 ] || [ -z "$BOOTSTRAPPED" ]
-    then
-      INSTALL_SITE=true
-    fi
   fi
 
   echo "Run git commands"

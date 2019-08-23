@@ -54,9 +54,12 @@ script:
   - cd web/themes/custom/nypl_emulsify
   - npm install
   - "./node_modules/gulp/bin/gulp.js build"
+  - rm -rf $HOME/web/themes/custom/nypl_emulsify/pattern-lab
+  - rm -rf $HOME/web/themes/custom/nypl_emulsify/node_modules
 
 after_success:
   - cd $TRAVIS_BUILD_DIR
+  - rm -f Robofile.php
   - provisioning/travis/build_for_aws.sh
   - provisioning/travis/deploy_on_aws.sh
   - provisioning/travis/deploy_to_pantheon.sh
@@ -65,11 +68,7 @@ after_failure:
   - if [ -f $HOME/server.log ] ; then echo "Server log:" && cat $HOME/server.log ; fi
 
 after_script:
-  - rm -f $TRAVIS_BUILD_DIR/.env
-  - rm -f $TRAVIS_BUILD_DIR/Robofile.php
   - rm -f $HOME/server.log
-  - rm -rf $HOME/web/themes/custom/nypl_emulsify/pattern-lab
-  - rm -rf $HOME/web/themes/custom/nypl_emulsify/node_modules
 
 notifications:
   email:
