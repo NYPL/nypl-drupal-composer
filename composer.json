@@ -130,7 +130,7 @@
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
         ],
         "docker": [
-            "DrupalProject\\composer\\ScriptHandler::createRequiredFiles"
+            "DrupalProject\\composer\\ScriptHandler::applyContainerSettings"
         ]
     },
     "extra": {
