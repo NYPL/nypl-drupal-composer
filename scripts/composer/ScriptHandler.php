@@ -46,21 +46,11 @@ class ScriptHandler
     // Prepare the settings file for installation
     if (!$fs->exists($drupalRoot . '/sites/default/settings.php') && $fs->exists($drupalRoot . '/sites/default/default.settings.php')) {
       $fs->copy($drupalRoot . '/sites/default/default.settings.php', $drupalRoot . '/sites/default/settings.php');
-      require_once $drupalRoot . '/core/includes/bootstrap.inc';
-      require_once $drupalRoot . '/core/includes/install.inc';
-      $settings['config_directories'] = [
-        CONFIG_SYNC_DIRECTORY => (object) [
-          'value' => Path::makeRelative($drupalFinder->getComposerRoot() . '/config/sync', $drupalRoot),
-          'required' => TRUE,
-        ],
-      ];
-      drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.php');
-      $fs->chmod($drupalRoot . '/sites/default/settings.php', 0666);
       if ($fs->exists($drupalRoot . '/sites/default/settings.php')) {
-        $event->getIO()->write("Created a sites/default/settings.php file with chmod 0666");
+        $event->getIO()->write("Created a sites/default/settings.php");
       }
       else {
-        $event->getIO()->write("Failed to create a sites/default/settings.php file with chmod 0666");
+        $event->getIO()->write("Failed to create a sites/default/settings.php");
       }
     }
 
@@ -92,7 +82,7 @@ class ScriptHandler
 
     // Insert our container settings file if it exists.
     if ($fs->exists('/tmp/settings.php')) {
-      $fs->copy('/tmp/settings.php', $drupalRoot . '/sites/default/settings.php');
+      $fs->copy('/tmp/settings.php', $drupalRoot . '/sites/default/settings.php', TRUE);
       $event->getIO()->write("Copied custom /tmp/settings.php to $drupalRoot/sites/default");
     }
     else {
@@ -100,7 +90,7 @@ class ScriptHandler
     }
     // Insert local settings for database connection and local development settings.
     if ($fs->exists('/tmp/settings.local.php')) {
-      $fs->copy('/tmp/settings.local.php', $drupalRoot . '/sites/default/settings.local.php');
+      $fs->copy('/tmp/settings.local.php', $drupalRoot . '/sites/default/settings.local.php', TRUE);
       $fs->chmod($drupalRoot . '/sites/default/settings.local.php', 0666);
       $event->getIO()->write("Copied /tmp/settings.local.php to $drupalRoot/sites/default");
     }
@@ -109,12 +99,25 @@ class ScriptHandler
     }
     // Add the basic services.yml based on the default.services.yml file.
     if ($fs->exists('/tmp/services.yml')) {
-      $fs->copy('/tmp/services.yml', $drupalRoot . '/sites/default/services.yml');
+      $fs->copy('/tmp/services.yml', $drupalRoot . '/sites/default/services.yml', TRUE);
       $fs->chmod($drupalRoot . '/sites/default/services.yml', 0666);
       $event->getIO()->write("Copied /tmp/services.yml to $drupalRoot/sites/default");
     }
     else {
       $event->getIO()->write("Failed to copy /tmp/services.yml to $drupalRoot/sites/default");
+    }
+    require_once $drupalRoot . '/core/includes/bootstrap.inc';
+    require_once $drupalRoot . '/core/includes/install.inc';
+    $settings['config_directories'] = [
+      CONFIG_SYNC_DIRECTORY => (object) [
+        'value' => '../../../config/sync',
+        'required' => TRUE,
+      ],
+    ];
+    drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.local.php');
+    $fs->chmod($drupalRoot . '/sites/default/settings.local.php', 0666);
+    if ($fs->exists($drupalRoot . '/sites/default/settings.local.php')) {
+      $event->getIO()->write("Rewrote sites/default/settings.local.php file with chmod 0666");
     }
   }
 
