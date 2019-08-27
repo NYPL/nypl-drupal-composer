@@ -188,12 +188,9 @@ __EOF__
   # Output of the diff vs upstream.
   cd "$DRUPAL_ROOT"
   # Always ensure we have Pantheon's specific settings in our build before commit
-  if [ ! -f "$WORK_REPO/web/sites/default/settings.pantheon.php" ]
-  then
-    cp config/pantheon/settings.php $DRUPAL_ROOT/web/sites/default/settings.php
-    cp config/pantheon/settings.pantheon.php $DRUPAL_ROOT/web/sites/default/settings.pantheon.php
-    cp config/pantheon/services.pantheon.preproduction.yml $DRUPAL_ROOT/web/sites/default/services.pantheon.preproduction.yml
-  fi
+  cp config/pantheon/settings.php $DRUPAL_ROOT/web/sites/default/settings.php
+  cp config/pantheon/settings.pantheon.php $DRUPAL_ROOT/web/sites/default/settings.pantheon.php
+  cp config/pantheon/services.pantheon.preproduction.yml $DRUPAL_ROOT/web/sites/default/services.pantheon.preproduction.yml
 
   # Use TravisCI .gitignore to ensure built artifacts are sent to Pantheon
   cp .travis/.gitignore $DRUPAL_ROOT
