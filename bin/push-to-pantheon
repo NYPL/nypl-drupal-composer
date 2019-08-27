@@ -58,13 +58,13 @@ then
   echo "Pantheon host checking"
   # Dynamic hosts through Pantheon mean constantly checking interactively
   # that we mean to connect to an unknown host. We ignore those here.
-  grep StrictHostKeyChecking "$HOME/.ssh/confg"
+  grep StrictHostKeyChecking "$HOME/.ssh/config"
   grep -q StrictHostKeyChecking "$HOME/.ssh/config"
   if [ $? != 0 ]
   then
     echo "Turn off strict checking"
     echo "StrictHostKeyChecking no" >> "$HOME/.ssh/config"
-    grep StrictHostKeyChecking "$HOME/.ssh/confg"
+    grep StrictHostKeyChecking "$HOME/.ssh/config"
   fi
 
   # Create a local policy file that specifies the version of Drush that
@@ -190,7 +190,7 @@ __EOF__
   # Use TravisCI .gitignore to ensure built artifacts are sent to Pantheon
   cp .travis/.gitignore $DRUPAL_ROOT
   echo "Log the status change"
-  git status >> $HOME/git-status.log
+  git status
 
   echo "Run git commands"
   # Push our built files up to Pantheon
