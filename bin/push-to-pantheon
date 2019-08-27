@@ -58,9 +58,11 @@ then
   echo "Pantheon host checking"
   # Dynamic hosts through Pantheon mean constantly checking interactively
   # that we mean to connect to an unknown host. We ignore those here.
+  grep StrictHostKeyChecking "$HOME/.ssh/confg"
   grep -q StrictHostKeyChecking "$HOME/.ssh/config"
   if [ $? != 0 ]
   then
+    echo "Turn off strict checking"
     echo "StrictHostKeyChecking no" >> "$HOME/.ssh/config"
   fi
 
