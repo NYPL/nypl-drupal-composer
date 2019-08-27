@@ -84,7 +84,7 @@ __EOF__
 
   # We need to clear the local Drush cache after defining a new policy file
   echo "Run drush cc drush"
-  drush cc drush
+  $TRAVIS_BUILD_DIR/vendor/bin/drush cc drush
 
   # Capture the commit message
   export CI_COMMIT_MSG="$(git log --format=%B --no-merges -n 1)"

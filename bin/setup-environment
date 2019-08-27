@@ -181,7 +181,7 @@ then
 fi
 
 # Ensure our Pantheon scaffolding files are up-to-date
-_DRUPAL_VERSION="`vendor/bin/drush st --field=drupal-version`"
+_DRUPAL_VERSION="`$TRAVIS_BUILD_DIR/vendor/bin/drush st --field=drupal-version`"
 curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/settings.pantheon.php >> config/pantheon/settings.pantheon.php
 curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/default.services.pantheon.preproduction.yml >> config/pantheon/services.pantheon.preproduction.yml
 
