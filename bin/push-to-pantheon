@@ -64,6 +64,7 @@ then
   then
     echo "Turn off strict checking"
     echo "StrictHostKeyChecking no" >> "$HOME/.ssh/config"
+    grep StrictHostKeyChecking "$HOME/.ssh/confg"
   fi
 
   # Create a local policy file that specifies the version of Drush that
