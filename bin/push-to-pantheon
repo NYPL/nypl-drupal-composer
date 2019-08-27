@@ -187,10 +187,9 @@ __EOF__
 
   # Output of the diff vs upstream.
   cd "$DRUPAL_ROOT"
-  if [ ! -f "$DRUPAL_ROOT/web/sites/default/settings.php" ]
-  then
-    cp config/pantheonsettings.php $DRUPAL_ROOT/web/sites/default/settings.php
-  fi
+  # Always ensure we have Pantheon's specific settings in our build before commit
+  cp config/pantheonsettings.php $DRUPAL_ROOT/web/sites/default/settings.php
+
   # Use TravisCI .gitignore to ensure built artifacts are sent to Pantheon
   cp .travis/.gitignore $DRUPAL_ROOT
   echo "Log the status change"
