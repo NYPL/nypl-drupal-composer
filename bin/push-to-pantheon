@@ -188,9 +188,12 @@ __EOF__
   # Output of the diff vs upstream.
   cd "$DRUPAL_ROOT"
   # Always ensure we have Pantheon's specific settings in our build before commit
-  cp config/pantheon/settings.php $DRUPAL_ROOT/web/sites/default/settings.php
-  cp config/pantheon/settings.pantheon.php $DRUPAL_ROOT/web/sites/default/settings.pantheon.php
-  cp config/pantheon/services.pantheon.preproduction.yml $DRUPAL_ROOT/web/sites/default/services.pantheon.preproduction.yml
+  if [ ! -f "$WORK_REPO/web/sites/default/settings.pantheon.php" ]
+  then
+    cp config/pantheon/settings.php $DRUPAL_ROOT/web/sites/default/settings.php
+    cp config/pantheon/settings.pantheon.php $DRUPAL_ROOT/web/sites/default/settings.pantheon.php
+    cp config/pantheon/services.pantheon.preproduction.yml $DRUPAL_ROOT/web/sites/default/services.pantheon.preproduction.yml
+  fi
 
   # Use TravisCI .gitignore to ensure built artifacts are sent to Pantheon
   cp .travis/.gitignore $DRUPAL_ROOT
@@ -200,6 +203,8 @@ __EOF__
   echo "Run git commands"
   # Push our built files up to Pantheon
   git add --all >> $HOME/git-add.log
+  # Force commit our build theme layer artifacts in /dist for deployments
+  git add -f $DRUPAL_ROOT/web/themes/custom/nypl_emulsify/dist
   aborterr "'git add --all' failed"
   git commit -a -m "Built by CI: '$CI_COMMIT_MSG'" >> $HOME/git-commit.txt
   aborterr "'git commit' failed"
