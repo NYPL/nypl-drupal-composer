@@ -191,6 +191,7 @@ __EOF__
   cp config/default.pantheon.settings.php $DRUPAL_ROOT/web/sites/default/settings.php
   cp config/default.settings.pantheon.php $DRUPAL_ROOT/web/sites/default/settings.pantheon.php
   cp config/default.services.pantheon.preproduction.yml $DRUPAL_ROOT/web/sites/default/services.pantheon.preproduction.yml
+
   # Use TravisCI .gitignore to ensure built artifacts are sent to Pantheon
   cp .travis/.gitignore $DRUPAL_ROOT
   echo "Log the status change"

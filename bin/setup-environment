@@ -168,8 +168,8 @@ _CI_BOT_DOMAIN="${CI_BOT_DOMAIN:-${PEMAIL/*@/}}"
 _CI_BOT_EMAIL="${CI_BOT_EMAIL:-ci-bot@$_CI_BOT_DOMAIN}"
 _CI_BOT_NAME="${CI_BOT_NAME:-CI Bot}"
 
-# If Drush version is not specified, then default to Drush 8
-_DRUSH_VERSION="${DRUSH_VERSION:-8}"
+# If Drush version is not specified, then default to Drush 9
+_DRUSH_VERSION="${DRUSH_VERSION:-9}"
 
 # If the CI provides us with an explicit build location (e.g. on Travis),
 # then we'll always believe that.  Otherwise, we'll stick with our base
@@ -179,6 +179,11 @@ if [ -n "$TRAVIS_BUILD_DIR" ]
 then
   PROJECT_BASE_DIR="$TRAVIS_BUILD_DIR"
 fi
+
+# Ensure our Pantheon scaffolding files are up-to-date
+_DRUPAL_VERSION="`drush st --field=drupal-version`"
+curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/settings.pantheon.php >> config/pantheon/settings.pantheon.php
+curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/default.services.pantheon.preproduction.yml >> config/pantheon/services.pantheon.preproduction.yml
 
 # Add vendor/bin, $HOME/bin and $HOME/.composer/vendor/bin to our $PATH
 export PATH="$PROJECT_BASE_DIR/bin:$HOME/bin:$HOME/terminus/vendor/bin:$PATH"

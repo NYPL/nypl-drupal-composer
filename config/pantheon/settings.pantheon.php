@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Pantheon configuration file.
@@ -10,6 +11,7 @@
  * may change in future releases and modifications would cause conflicts when
  * attempting to apply upstream updates.
  */
+
 /**
  * Version of Pantheon files.
  *
@@ -25,6 +27,7 @@
 if (!defined("PANTHEON_VERSION")) {
   define("PANTHEON_VERSION", "3");
 }
+
 /**
  * Determine whether this is a preproduction or production environment, and
  * then load the pantheon services.yml file.  This file should be named either
@@ -38,9 +41,11 @@ if (
 ) {
   $pantheon_services_file = __DIR__ . '/services.pantheon.production.yml';
 }
+
 if (file_exists($pantheon_services_file)) {
   $settings['container_yamls'][] = $pantheon_services_file;
 }
+
 /**
  * Set the default location for the 'private' directory.  Note
  * that this location is protected when running on the Pantheon
@@ -48,8 +53,10 @@ if (file_exists($pantheon_services_file)) {
  * another environment.
  */
 $settings['file_private_path'] = 'sites/default/files/private';
+
 // Check to see if we are serving an installer page.
 $is_installer_url = (strpos($_SERVER['SCRIPT_NAME'], '/core/install.php') === 0);
+
 /**
  * Add the Drupal 8 CMI Directory Information directly in settings.php to make sure
  * Drupal knows all about that.
@@ -73,6 +80,8 @@ else {
     CONFIG_SYNC_DIRECTORY => 'sites/default/config',
   );
 }
+
+
 /**
  * Allow Drupal 8 to Cleanly Redirect to Install.php For New Sites.
  *
@@ -92,6 +101,7 @@ if (
   include_once __DIR__ . '/../../core/includes/install.inc';
   install_goto('core/install.php');
 }
+
 /**
  * Override the $databases variable to pass the correct Database credentials
  * directly from Pantheon to Drupal.
@@ -122,6 +132,7 @@ if (isset($_SERVER['PRESSFLOW_SETTINGS'])) {
     }
   }
 }
+
 /**
  * Handle Hash Salt Value from Drupal
  *
@@ -131,6 +142,7 @@ if (isset($_SERVER['PRESSFLOW_SETTINGS'])) {
 if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
   $settings['hash_salt'] = $_ENV['DRUPAL_HASH_SALT'];
 }
+
 /**
  * Define appropriate location for tmp directory
  *
@@ -140,6 +152,7 @@ if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
 if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
   $config['system.file']['path']['temporary'] = $_SERVER['HOME'] .'/tmp';
 }
+
 /**
  * Place Twig cache files in the Pantheon rolling temporary directory.
  * A new rolling temporary directory is provided on every code deploy,
@@ -157,6 +170,7 @@ if (isset($_ENV['PANTHEON_ROLLING_TMP']) && isset($_ENV['PANTHEON_DEPLOYMENT_IDE
   $settings['deployment_identifier'] = $_ENV['PANTHEON_DEPLOYMENT_IDENTIFIER'];
   $settings['php_storage']['twig']['secret'] = $_ENV['DRUPAL_HASH_SALT'] . $settings['deployment_identifier'];
 }
+
 /**
  * Install the Pantheon Service Provider to hook Pantheon services into
  * Drupal 8. This service provider handles operations such as clearing the
@@ -165,6 +179,7 @@ if (isset($_ENV['PANTHEON_ROLLING_TMP']) && isset($_ENV['PANTHEON_DEPLOYMENT_IDE
 if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
   $GLOBALS['conf']['container_service_providers']['PantheonServiceProvider'] = '\Pantheon\Internal\PantheonServiceProvider';
 }
+
 /**
  * "Trusted host settings" are not necessary on Pantheon; traffic will only
  * be routed to your site if the host settings match a domain configured for
@@ -173,6 +188,7 @@ if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
 if (isset($_ENV['PANTHEON_ENVIRONMENT'])) {
   $settings['trusted_host_patterns'][] = '.*';
 }
+
 /**
  * The default list of directories that will be ignored by Drupal's file API.
  *
@@ -189,3 +205,4 @@ if (empty($settings['file_scan_ignore_directories'])) {
     'bower_components',
   ];
 }
+
