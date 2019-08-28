@@ -20,7 +20,6 @@ web/sites/*/settings.local.php
 web/sites/*/services*.yml
 !web/sites/*/settings.pantheon.php
 !web/sites/*/services.pantheon.*.yml
-!web/sites/*/services.yml
 
 # Ignore SimpleTest multi-site environment.
 web/sites/simpletest
