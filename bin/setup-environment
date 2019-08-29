@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 PROJECT_BASE_DIR="`cd -P -- "$SELF_DIRNAME/.." && pwd -P`"
 TRAVIS_REPO_NAME=$(echo $TRAVIS_REPO_SLUG | cut -d '/' -f 2)
 PROJECT_NAME=${PROJECT_NAME:-$TRAVIS_REPO_NAME}
@@ -133,8 +135,8 @@ SITE_URI="$behat_conf_default_extensions_BehatMinkExtension_base_url"
 #    @group.sitename.env
 #         or
 #    @sitename.env
-# If there is no "group", we will default to 'pantheon-travis'.
-ALIASGROUP='pantheon-travis'
+# If there is no "group", we will default to 'pantheon-ci'.
+ALIASGROUP='pantheon-circle'
 SITE_AND_ENV="$behat_conf_default_extensions_DrupalDrupalExtension_drush_alias"
 if [ -n "$(echo $behat_conf_default_extensions_DrupalDrupalExtension_drush_alias | grep '@[^.]\+\.[^.]\+\.[^.]\+')" ]
 then
@@ -189,8 +191,8 @@ fi
 
 # Ensure our Pantheon scaffolding files are up-to-date; overwrite existing files
 _DRUPAL_VERSION="`$TRAVIS_BUILD_DIR/vendor/bin/drush st --field=drupal-version`"
-curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/settings.pantheon.php > config/pantheon/settings.pantheon.php
-curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/default.services.pantheon.preproduction.yml > config/pantheon/services.pantheon.preproduction.yml
+# curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/settings.pantheon.php > config/pantheon/settings.pantheon.php
+# curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/default.services.pantheon.preproduction.yml > config/pantheon/services.pantheon.preproduction.yml
 
 # Add vendor/bin, $HOME/bin and $HOME/.composer/vendor/bin to our $PATH
 export PATH="$PROJECT_BASE_DIR/bin:$HOME/bin:$HOME/terminus/vendor/bin:$PATH"

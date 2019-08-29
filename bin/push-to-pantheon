@@ -227,4 +227,6 @@ __EOF__
   fi
 
   terminus drush $TRAVIS_SITE.$TRAVIS_ENV -- updatedb -y
+else
+  echo "Failed to deploy. Ensure you have a MACHINE_TOKEN configured."
 fi
