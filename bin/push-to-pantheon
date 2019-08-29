@@ -36,7 +36,7 @@ set -eo pipefail
 SELF_DIRNAME="`dirname -- "$0"`"
 source $SELF_DIRNAME/setup-environment
 
-echo "Push to Pantheon $DRUSH_ALIAS"
+echo "Push to Pantheon"
 
 # If Terminus is not already in the $PATH, then we will install it later.
 CHECK_TERMINUS="$(which terminus)"
@@ -60,29 +60,8 @@ then
   echo "Pantheon host checking"
   # Dynamic hosts through Pantheon mean constantly checking interactively
   # that we mean to connect to an unknown host. We ignore those here.
-  grep StrictHostKeyChecking "$HOME/.ssh/config"
-  grep -q StrictHostKeyChecking "$HOME/.ssh/config"
-  if [ $? != 0 ]
-  then
-    echo "Turn off strict checking"
-    echo "StrictHostKeyChecking no" >> "$HOME/.ssh/config"
-    grep StrictHostKeyChecking "$HOME/.ssh/config"
-  fi
-
-  # Create a local policy file that specifies the version of Drush that
-  # the CI server should use when running Drush commands remotely on Pantheon.
-  # n.b. we still want to use drush8 for Drupal 8 sites
-  mkdir -p "$HOME/.drush"
-  cat << __EOF__ > "$HOME/.drush/pantheonpolicy.drush.inc"
-<?php
-
-function pantheonpolicy_drush_sitealias_alter(&\$alias_record) {
-  // Fix pantheon aliases!
-  if (isset(\$alias_record['remote-host']) && (substr(\$alias_record['remote-host'], 0, 10) == 'appserver.')) {
-    \$alias_record['path-aliases']['%drush-script'] = 'drush$_DRUSH_VERSION';
-  }
-}
-__EOF__
+  echo "Turn off strict checking"
+  mkdir -p "$HOME/.ssh" && echo "StrictHostKeyChecking no" >> "$HOME/.ssh/config"
 
   # We need to clear the local Drush cache after defining a new policy file
   echo "Run drush cc drush"
@@ -108,7 +87,7 @@ __EOF__
 
   if [ $LOGGED_IN == 0 ]
   then
-    # Set up Terminus and aliases, and wake up the site
+    # Set up Terminus, and wake up the site
     echo "Log in to Pantheon via Terminus"
     # Redirect output when logging in.  Terminus prints the email address
     # used during login to stdout, which will end up in the log.  It's better
@@ -135,9 +114,6 @@ __EOF__
   fi
   PUUID=$(echo $PUUID | sed -e 's/^[^:]*: *//')
   echo "UUID for $TRAVIS_SITE is $PUUID"
-  echo "Fetch aliases via Terminus"
-  terminus aliases --location="$HOME/.drush/$ALIASGROUP.aliases.drushrc.php"
-  aborterr "Could not fetch aliases via Terminus"
   echo "Wake up the site $TRAVIS_SITE"
   terminus env:wake "$TRAVIS_SITE"."$TRAVIS_ENV"
   check "Site wakeup successful" "Could not wake up site"

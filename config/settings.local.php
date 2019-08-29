@@ -161,4 +161,3 @@ $settings['rebuild_access'] = TRUE;
  */
 $settings['skip_permissions_hardening'] = TRUE;
 
-$settings['hash_salt'] = file_get_contents('/usr/local/share/salt.txt');

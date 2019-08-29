@@ -77,50 +77,57 @@ class ScriptHandler
    * @param Event $event
    * @return void
    */
-  public static function applyContainerSettings(Event $event) {
+  public static function applyCustomSettings(Event $event) {
     $fs = new Filesystem();
     $drupalFinder = new DrupalFinder();
     $drupalFinder->locateRoot(getcwd());
     $drupalRoot = $drupalFinder->getDrupalRoot();
 
-    // Insert our container settings file if it exists.
-    if ($fs->exists('/tmp/settings.php')) {
-      $fs->copy('/tmp/settings.php', $drupalRoot . '/sites/default/settings.php', TRUE);
-      $event->getIO()->write("Copied custom /tmp/settings.php to $drupalRoot/sites/default");
+    // Insert our settings file if it exists.
+    if ($fs->exists($drupalRoot . '/../config/settings.php')) {
+      $fs->copy($drupalRoot . '/../config/settings.php', $drupalRoot . '/sites/default/settings.php', TRUE);
+      $event->getIO()->write("Copied custom settings.php to $drupalRoot/sites/default");
     }
     else {
-      $event->getIO()->write("Failed to copy custom /tmp/settings.php to sites/default");
+      $event->getIO()->write("Failed to copy custom settings.php to sites/default");
     }
     // Insert local settings for database connection and local development settings.
-    if ($fs->exists('/tmp/settings.local.php')) {
-      $fs->copy('/tmp/settings.local.php', $drupalRoot . '/sites/default/settings.local.php', TRUE);
+    if ($fs->exists($drupalRoot . '/../config/settings.local.php')) {
+      $fs->copy($drupalRoot . '/../config/settings.local.php', $drupalRoot . '/sites/default/settings.local.php', TRUE);
       $fs->chmod($drupalRoot . '/sites/default/settings.local.php', 0644);
-      $event->getIO()->write("Copied /tmp/settings.local.php to $drupalRoot/sites/default");
+      $event->getIO()->write("Copied settings.local.php to $drupalRoot/sites/default");
     }
     else {
-      $event->getIO()->write("Failed to copy /tmp/settings.local.php to $drupalRoot/sites/default");
+      $event->getIO()->write("Failed to copy settings.local.php to $drupalRoot/sites/default");
     }
     // Add the basic services.yml based on the default.services.yml file.
-    if ($fs->exists('/tmp/services.yml')) {
-      $fs->copy('/tmp/services.yml', $drupalRoot . '/sites/default/services.yml', TRUE);
+    if ($fs->exists($drupalRoot . '/../config/services.yml')) {
+      $fs->copy($drupalRoot . '/../config/services.yml', $drupalRoot . '/sites/default/services.yml', TRUE);
       $fs->chmod($drupalRoot . '/sites/default/services.yml', 0644);
-      $event->getIO()->write("Copied /tmp/services.yml to $drupalRoot/sites/default");
+      $event->getIO()->write("Copied services.yml to $drupalRoot/sites/default");
     }
     else {
-      $event->getIO()->write("Failed to copy /tmp/services.yml to $drupalRoot/sites/default");
+      $event->getIO()->write("Failed to copy services.yml to $drupalRoot/sites/default");
     }
     require_once $drupalRoot . '/core/includes/bootstrap.inc';
     require_once $drupalRoot . '/core/includes/install.inc';
     $settings['config_directories'] = [
       CONFIG_SYNC_DIRECTORY => (object) [
-        'value' => '../../../config/sync',
+        'value' => Path::makeRelative($drupalFinder->getComposerRoot() . '/config/sync', $drupalRoot),
         'required' => TRUE,
       ],
     ];
-    drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.local.php');
-    $fs->chmod($drupalRoot . '/sites/default/settings.local.php', 0644);
-    if ($fs->exists($drupalRoot . '/sites/default/settings.local.php')) {
-      $event->getIO()->write("Rewrote sites/default/settings.local.php file with chmod 0666");
+    drupal_rewrite_settings($settings, $drupalRoot . '/sites/default/settings.php');
+    $fs->chmod($drupalRoot . '/sites/default/settings.php', 0666);
+    if ($fs->exists($drupalRoot . '/sites/default/settings.php')) {
+      $event->getIO()->write("Rewrote sites/default/settings.php file with chmod 0666");
+    }
+
+    $envPath = $drupalRoot . '/../.env';
+    if ($fs->exists($envPath)) {
+      file_put_contents($envPath, str_replace(
+          'HASH_SALT=', 'HASH_SALT=' . base64_encode(hash('sha256', date(time()))), file_get_contents($envPath)
+      ));
     }
   }
 
