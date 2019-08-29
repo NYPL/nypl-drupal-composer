@@ -169,7 +169,7 @@ class ScriptHandler
    * updating it with `terminus composer <site>.<env> update`. This
    * is not used in the GitHub PR workflow.
    */
-  public static function prepareForPantheon()
+  public static function prepareForPantheon(Event $event)
   {
     // Get rid of any .git directories that Composer may have added.
     // n.b. Ideally, there are none of these, as removing them may
@@ -188,6 +188,7 @@ class ScriptHandler
       as $dir) {
       $dirsToDelete[] = $dir;
     }
+    $event->getIO()->write("Directory: " . getcwd());
     $fs = new Filesystem();
     $fs->remove($dirsToDelete);
 
@@ -197,6 +198,7 @@ class ScriptHandler
     $gitignoreContents = preg_replace('/.*::: cut :::*/s', '', $gitignoreContents);
     file_put_contents($gitignoreFile, $gitignoreContents);
   }
+
   /**
    * Checks if the installed version of Composer is compatible.
    *
