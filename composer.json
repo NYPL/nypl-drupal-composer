@@ -110,7 +110,12 @@
         "files": ["load.environment.php"]
     },
     "scripts": {
+        "build-web-assets": "composer -n install --prefer-source --no-dev",
+        "build-dev-assets": "composer -n update --prefer-source",
         "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
+        "docker": "DrupalProject\\composer\\ScriptHandler::applyContainerSettings",
+        "verify-libs": "DrupalProject\\composer\\ScriptHandler::verifyLibraries",
+        "prepare-for-pantheon": "DrupalProject\\composer\\ScriptHandler::prepareForPantheon",
         "pre-install-cmd": [
             "DrupalProject\\composer\\ScriptHandler::checkComposerVersion"
         ],
@@ -120,11 +125,11 @@
         "post-install-cmd": [
             "@drupal-scaffold",
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "DrupalProject\\composer\\ScriptHandler::mergeDesignSystemAssets"
+            "@verify-libs"
         ],
         "post-update-cmd": [
             "DrupalProject\\composer\\ScriptHandler::createRequiredFiles",
-            "DrupalProject\\composer\\ScriptHandler::mergeDesignSystemAssets"
+            "@verify-libs"
         ],
         "post-create-project-cmd": [
             "@drupal-scaffold",

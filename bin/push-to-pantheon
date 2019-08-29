@@ -17,7 +17,7 @@
 # The specific environment variables we need are:
 #
 #   SITE_NAME:     The human-readable name of the site to give to site-install.
-#                  Optional. Defaults to $PSITE.
+#                  Optional. Defaults to $TRAVIS_SITE.
 #   MACHINE_TOKEN: The machine token associated with the Pantheon account.
 #                  Optional.
 #   SITEPASS:      The password that should be set on the test site.
@@ -30,6 +30,8 @@
 # It is also expected that there should be an SSH private key in
 # $HOME/.ssh that can be used to push code to the Pantheon git repository.
 #
+
+set -eo pipefail
 
 SELF_DIRNAME="`dirname -- "$0"`"
 source $SELF_DIRNAME/setup-environment
@@ -100,7 +102,8 @@ __EOF__
     # requires 4.6 or later.  We'll make our own location for terminus installs.
     mkdir -p $HOME/terminus
     cd $HOME/terminus
-    composer require katzgrau/klogger:dev-master pantheon-systems/terminus
+    composer require pantheon-systems/terminus:^2.0.1
+    composer require pantheon-systems/terminus-build-tools-plugin:^2.0.0-beta12
   fi
 
   if [ $LOGGED_IN == 0 ]
@@ -114,34 +117,34 @@ __EOF__
     terminus auth:login --machine-token=$MACHINE_TOKEN >/dev/null 2>&1
     check "Logged in to Pantheon via Terminus" "Could not log in to Pantheon with Terminus"
   fi
-  echo "Check to see if Pantheon site $PSITE exists"
+  echo "Check to see if Pantheon site $TRAVIS_SITE exists"
   mkdir -p "$HOME/.drush"
   which terminus
-  PUUID=$(terminus site:info "$PSITE" --field=id 2>/dev/null)
+  PUUID=$(terminus site:info "$TRAVIS_SITE" --field=id 2>/dev/null)
   if [ -z "$PUUID" ] && [ -n $AUTOCREATE ]
   then
-    echo "Creating site $PSITE"
-    terminus site:create $PSITE $_SITE_NAME empty
-    check "Created site $PSITE" "Could not create site $PSITE"
-    PUUID=$(terminus site info --site="$PSITE" --field=id 2>/dev/null)
+    echo "Creating site $TRAVIS_SITE"
+    terminus site:create $TRAVIS_SITE $_SITE_NAME empty
+    check "Created site $TRAVIS_SITE" "Could not create site $TRAVIS_SITE"
+    PUUID=$(terminus site info --site="$TRAVIS_SITE" --field=id 2>/dev/null)
   fi
   if [ -z "$PUUID" ]
   then
-    echo "Could not get UUID for $PSITE"
+    echo "Could not get UUID for $TRAVIS_SITE"
     exit 1
   fi
   PUUID=$(echo $PUUID | sed -e 's/^[^:]*: *//')
-  echo "UUID for $PSITE is $PUUID"
+  echo "UUID for $TRAVIS_SITE is $PUUID"
   echo "Fetch aliases via Terminus"
   terminus aliases --location="$HOME/.drush/$ALIASGROUP.aliases.drushrc.php"
   aborterr "Could not fetch aliases via Terminus"
-  echo "Wake up the site $PSITE"
-  terminus env:wake "$PSITE"."$PENV"
+  echo "Wake up the site $TRAVIS_SITE"
+  terminus env:wake "$TRAVIS_SITE"."$TRAVIS_ENV"
   check "Site wakeup successful" "Could not wake up site"
 
   # Make sure we are in git mode
-  terminus connection:set "$PSITE"."$PENV" git
-  check "Changed connection mode to 'git' for $PSITE $PENV environment" "Could not change connection mode to 'git' for $PSITE $PENV environment"
+  terminus connection:set "$TRAVIS_SITE"."$TRAVIS_ENV" git
+  check "Changed connection mode to 'git' for $TRAVIS_SITE $TRAVIS_ENV environment" "Could not change connection mode to 'git' for $TRAVIS_SITE $TRAVIS_ENV environment"
 
   # Identify the automation user
   if [ -n "$CI" ]
@@ -153,9 +156,9 @@ __EOF__
   # Use the 'master' branch for the dev environment; for multidev,
   # use the branch with the same name as the multidev environment name.
   BRANCH=master
-  if [ "$PENV" != "dev" ]
+  if [ "$TRAVIS_ENV" != "dev" ]
   then
-    BRANCH="$PENV"
+    BRANCH="$TRAVIS_ENV"
   fi
 
   # Clone the Pantheon repository into a separate directory, then
@@ -168,7 +171,8 @@ __EOF__
   check "git clone successful" "Could not clone repository from $REPO"
 
   # Get rid of any .git directories created by composer
-  rm -rf $(find "$DRUPAL_ROOT" -name ".git")
+  # Update .gitignore
+  composer run prepare-for-pantheon
   # Move the .git directory we checked out on top of the files we built.
   # This is functionally equivalent to copying the built files over the
   # checked-out repository, except more efficient.
@@ -188,12 +192,17 @@ __EOF__
   # Output of the diff vs upstream.
   cd "$DRUPAL_ROOT"
   # Always ensure we have Pantheon's specific settings in our build before commit
-  cp config/pantheon/settings.php $DRUPAL_ROOT/web/sites/default/settings.php
-  cp config/pantheon/settings.pantheon.php $DRUPAL_ROOT/web/sites/default/settings.pantheon.php
-  cp config/pantheon/services.pantheon.preproduction.yml $DRUPAL_ROOT/web/sites/default/services.pantheon.preproduction.yml
+  if [ ! -f "$WORK_REPO/web/sites/default/settings.pantheon.php" ]
+  then
+    cp config/pantheon/settings.php $DRUPAL_ROOT/web/sites/default/settings.php
+    cp config/pantheon/settings.pantheon.php $DRUPAL_ROOT/web/sites/default/settings.pantheon.php
+    cp config/pantheon/services.pantheon.preproduction.yml $DRUPAL_ROOT/web/sites/default/services.pantheon.preproduction.yml
+  else
+    cp $WORK_REPO/web/sites/default/settings.php $DRUPAL_ROOT/web/sites/default/settings.php
+    cp $WORK_REPO/web/sites/default/settings.pantheon.php $DRUPAL_ROOT/web/sites/default/settings.pantheon.php
+    cp $WORK_REPO/web/sites/default/services.pantheon.preproduction.yml $DRUPAL_ROOT/web/sites/default/services.pantheon.preproduction.yml
+  fi
 
-  # Use TravisCI .gitignore to ensure built artifacts are sent to Pantheon
-  cp .travis/.gitignore $DRUPAL_ROOT
   echo "Log the status change"
   git status
 
@@ -205,8 +214,17 @@ __EOF__
   aborterr "'git add --all' failed"
   git commit -a -m "Built by CI: '$CI_COMMIT_MSG'" >> $HOME/git-commit.txt
   aborterr "'git commit' failed"
-  git push origin "$BRANCH" >> $HOME/git-push.txt
-  aborterr "'git push' failed"
 
-  terminus drush $PSITE.$PENV -- updatedb -y
+  # Create a multidev environment if this is a pull request
+  # Push code to master if not a pull request
+  if [ ! -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_BRANCH" !== "false" ]
+  then
+    # Create a new multidev environment (or push to an existing one)
+    terminus -n build:env:create "$TRAVIS_SITE.dev" "$TRAVIS_ENV" --yes
+  else
+      # Push to the dev environment
+    terminus -n build:env:push "$TRAVIS_SITE.dev" --yes
+  fi
+
+  terminus drush $TRAVIS_SITE.$TRAVIS_ENV -- updatedb -y
 fi

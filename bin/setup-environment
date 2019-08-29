@@ -1,7 +1,19 @@
 #!/bin/bash
 
 PROJECT_BASE_DIR="`cd -P -- "$SELF_DIRNAME/.." && pwd -P`"
+TRAVIS_REPO_NAME=$(echo $TRAVIS_REPO_SLUG | cut -d '/' -f 2)
+PROJECT_NAME=${PROJECT_NAME:-$TRAVIS_REPO_NAME}
 DRUPAL_ROOT="$PROJECT_BASE_DIR"
+DEFAULT_SITE=${PSITE:-$PROJECT_NAME}
+DEFAULT_BRANCH=${DEFAULT_BRANCH:-master}
+
+if [[ $TRAVIS_BRANCH == $DEFAULT_BRANCH ]]
+then
+  DEFAULT_ENV=${PENV:-dev}
+else
+  DEFAULT_ENV=ci-$TRAVIS_BUILD_ID
+fi
+
 for location in docroot htdocs drupal code .. ; do
   if [ ! -d "$DRUPAL_ROOT" ] && [ -d "$PROJECT_BASE_DIR/$location/sites" ] && [ -f "$PROJECT_BASE_DIR/$location/index.php" ]
   then
@@ -9,13 +21,7 @@ for location in docroot htdocs drupal code .. ; do
   fi
 done
 
-# Load default environment values
-DEFAULT_ENVIRONMENT_SCRIPT="$PROJECT_BASE_DIR/scripts/default-environment"
-if [ -f "$DEFAULT_ENVIRONMENT_SCRIPT" ]
-then
-  source "$DEFAULT_ENVIRONMENT_SCRIPT"
-fi
-
+# Behat testing setup
 behat_config_file=
 
 #
@@ -127,8 +133,8 @@ SITE_URI="$behat_conf_default_extensions_BehatMinkExtension_base_url"
 #    @group.sitename.env
 #         or
 #    @sitename.env
-# If there is no "group", we will default to 'pantheon-ci'.
-ALIASGROUP='pantheon-circle'
+# If there is no "group", we will default to 'pantheon-travis'.
+ALIASGROUP='pantheon-travis'
 SITE_AND_ENV="$behat_conf_default_extensions_DrupalDrupalExtension_drush_alias"
 if [ -n "$(echo $behat_conf_default_extensions_DrupalDrupalExtension_drush_alias | grep '@[^.]\+\.[^.]\+\.[^.]\+')" ]
 then
@@ -146,7 +152,8 @@ then
 fi
 
 DRUSH_ALIAS="@$ALIASGROUP.$PSITE.$PENV"
-
+TRAVIS_SITE=${PSITE:-$DEFAULT_SITE}
+TRAVIS_ENV=${PENV:-$DEFAULT_ENV}
 _SITE_NAME="${SITE_NAME:-${DEFAULT_SITE_NAME:-${PSITE}}}"
 
 
@@ -180,10 +187,10 @@ then
   PROJECT_BASE_DIR="$TRAVIS_BUILD_DIR"
 fi
 
-# Ensure our Pantheon scaffolding files are up-to-date
+# Ensure our Pantheon scaffolding files are up-to-date; overwrite existing files
 _DRUPAL_VERSION="`$TRAVIS_BUILD_DIR/vendor/bin/drush st --field=drupal-version`"
-# curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/settings.pantheon.php >> config/pantheon/settings.pantheon.php
-# curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/default.services.pantheon.preproduction.yml >> config/pantheon/services.pantheon.preproduction.yml
+curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/settings.pantheon.php > config/pantheon/settings.pantheon.php
+curl https://raw.githubusercontent.com/pantheon-systems/drops-8-scaffolding/$_DRUPAL_VERSION/sites/default/default.services.pantheon.preproduction.yml > config/pantheon/services.pantheon.preproduction.yml
 
 # Add vendor/bin, $HOME/bin and $HOME/.composer/vendor/bin to our $PATH
 export PATH="$PROJECT_BASE_DIR/bin:$HOME/bin:$HOME/terminus/vendor/bin:$PATH"
@@ -196,6 +203,8 @@ export SITE_URI
 export ALIASGROUP
 export PSITE
 export PENV
+export TRAVIS_SITE
+export TRAVIS_ENV
 export DRUSH_ALIAS
 export _SITE_NAME
 export _CI_BOT_DOMAIN

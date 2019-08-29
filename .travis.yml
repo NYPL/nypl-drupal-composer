@@ -11,7 +11,6 @@ php:
 
 env:
   global:
-  - COMPOSER_MEMORY_LIMIT=2G
   - SIMPLETEST_BASE_URL=http://127.0.0.1:8080
   - SIMPLETEST_DB_URL=mysql://tmp/mysql
   # Node version for nypl_emulsify asset build
@@ -20,6 +19,7 @@ env:
   - REMOTE_IMAGE_URL=491147561046.dkr.ecr.us-east-1.amazonaws.com/nypldrupal_phpnginx
   - secure: U5RJew207zn1HAEn/3HsXbWJegL4gY5pgh3BQlDmAPKAHaMvyE8KsYuw9bNquatrRSM4CCp2B1gpWWuR3odaz8A3wSkF3IGd1hrcHawok9Uo7hy46/kGnFp43nAXu6FXf3MAzNd385wSEdfFKdTuBto/TX8S7bMDWZD8aibqBZLYTxNMiHPXVMhyQXfEyro9x/BjpitqcukGiN55L1OEAeEvfdtzXGC7aeDe0sOu01jC6eC5LD9DCeUlDHBa2SZliYqSbXkRSrvyFcWP32Paa6hY8h3jx/PGmLyUQ0xIKBEKMK+aH69ywHQnGhT3m4unw40xItmG1xDLdMuir0YW1Yn1xyNMzQgnUXpHRSpAM0d4Zcjmf8Vvcmr3CNyby2JtxQF+NyMN4m78dInj7ThI743fIfqz3TM8aJALmNq1IUwNriRQOcWITfdQsHlAZ748qT7EUnZC2iKZiYcdBPc1XulmIav7YFuYjIRk9fAQsvpA5mf3rQz7+KxKrYw/Ww0K5QNB82kcAHcsX+DvDatlk89QuLKraJ4c29O5Gs4IqR6ZRJTN3BjHm9Nv82KmRjaKgKbPblZR78bWWiumV5a6tl5ZxdghF5wvcMpdCUiE5mvY++DkQZ+u4T+IAIg3RqeZpBNG2MRGILt/kMbDfvrqGRDZo7FOUWJlhmhA7QS0H2o=
   # Travis variables for Pantheon
+  - DEFAULT_BRANCH=pantheon
   - PSITE='nypl-docker'
   - PENV='dev'
   - PHOST='https://$PENV-$PSITE.pantheonsite.io'
