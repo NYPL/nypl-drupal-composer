@@ -31,8 +31,6 @@
 # $HOME/.ssh that can be used to push code to the Pantheon git repository.
 #
 
-set -eo pipefail
-
 SELF_DIRNAME="`dirname -- "$0"`"
 source $SELF_DIRNAME/setup-environment
 
