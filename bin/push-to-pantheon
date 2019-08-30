@@ -72,10 +72,10 @@ then
   if [ -z "$CHECK_TERMINUS" ]
   then
     echo "Install terminus"
-    mkdir -p $HOME/.terminus/plugins
-    TERMINUS_PLUGINS_DIR=$HOME/.terminus/plugins
-    composer -n --working-dir=$HOME/.terminus require pantheon-systems/terminus:^2
-    composer -n create-project -d $HOME/.terminus/plugins pantheon-systems/terminus-build-tools-plugin:^2.0.0-beta12
+    mkdir -p $HOME/terminus/plugins
+    TERMINUS_PLUGINS_DIR=$HOME/terminus/plugins
+    composer -n require pantheon-systems/terminus:^2
+    composer -n create-project -d $HOME/terminus/plugins pantheon-systems/terminus-build-tools-plugin:^2.0.0-beta12
   fi
 
   if [ $LOGGED_IN == 0 ]
