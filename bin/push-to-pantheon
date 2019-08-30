@@ -164,10 +164,12 @@ then
   # Always ensure we have Pantheon's specific settings in our build before commit
   if [ ! -f "$WORK_REPO/web/sites/default/settings.pantheon.php" ]
   then
+    echo "Copying pre-built Pantheon settings files."
     cp config/pantheon/settings.php $DRUPAL_ROOT/web/sites/default/settings.php
     cp config/pantheon/settings.pantheon.php $DRUPAL_ROOT/web/sites/default/settings.pantheon.php
     cp config/pantheon/services.pantheon.preproduction.yml $DRUPAL_ROOT/web/sites/default/services.pantheon.preproduction.yml
   else
+    echo "Copying existing Pantheon settings files."
     cp $WORK_REPO/web/sites/default/settings.php $DRUPAL_ROOT/web/sites/default/settings.php
     cp $WORK_REPO/web/sites/default/settings.pantheon.php $DRUPAL_ROOT/web/sites/default/settings.pantheon.php
     cp $WORK_REPO/web/sites/default/services.pantheon.preproduction.yml $DRUPAL_ROOT/web/sites/default/services.pantheon.preproduction.yml
@@ -187,10 +189,10 @@ then
 
   # Create a multidev environment if this is a pull request
   # Push code to master if not a pull request
-  if [ ! -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_BRANCH" !== "false" ]
+  if [ ! -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_PULL_REQUEST" !== "false" ]
   then
     # Create a new multidev environment (or push to an existing one)
-    echo "Creating a multidev environment for $TRAVIS_SITE.dev for env: $TRAVIS_ENV."
+    echo "Creating a multidev environment from $TRAVIS_SITE.dev for env: $TRAVIS_ENV."
     terminus -n build:env:create "$TRAVIS_SITE.dev" "$TRAVIS_ENV" --yes
   else
       # Push to the dev environment
