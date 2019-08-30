@@ -189,7 +189,7 @@ then
 
   # Create a multidev environment if this is a pull request
   # Push code to master if not a pull request
-  if [ ! -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_PULL_REQUEST" !== "false" ]
+  if [ -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_PULL_REQUEST" != "false" ]
   then
     # Create a new multidev environment (or push to an existing one)
     echo "Creating a multidev environment from $TRAVIS_SITE.dev for env: $TRAVIS_ENV."
