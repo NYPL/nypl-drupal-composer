@@ -188,7 +188,6 @@ class ScriptHandler
       as $dir) {
       $dirsToDelete[] = $dir;
     }
-    $event->getIO()->write("Directory: " . getcwd());
     $fs = new Filesystem();
     $fs->remove($dirsToDelete);
 

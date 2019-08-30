@@ -72,15 +72,11 @@ then
   if [ -z "$CHECK_TERMINUS" ]
   then
     echo "Install terminus"
-    # We install via Composer rather than using curl to fetch the phar
-    # because this way we always get the latest version.
-    # n.b. Composer global require does not work here, because Circle CI starts off
-    # with a global composer.json that requires phpunit 4.1.*, and Terminus
-    # requires 4.6 or later.  We'll make our own location for terminus installs.
-    mkdir -p $HOME/terminus
-    cd $HOME/terminus
-    composer require pantheon-systems/terminus:^2.0.1
-    composer require pantheon-systems/terminus-build-tools-plugin:^2.0.0-beta12
+    mkdir -p /usr/local/share/terminus/plugins
+    env COMPOSER_BIN_DIR=/usr/local/bin
+    env TERMINUS_PLUGINS_DIR=/usr/local/share/terminus/plugins
+    composer -n --working-dir=/usr/local/share/terminus require pantheon-systems/terminus:^2
+    composer -n --working-dir=/usr/local/share/terminus/plugins require pantheon-systems/terminus-build-tools-plugin:^2.0.0-beta12
   fi
 
   if [ $LOGGED_IN == 0 ]
@@ -147,6 +143,7 @@ then
   # Get rid of any .git directories created by composer
   # Update .gitignore
   composer run prepare-for-pantheon
+  rm -rf "$DRUPAL_ROOT/.git"
   # Move the .git directory we checked out on top of the files we built.
   # This is functionally equivalent to copying the built files over the
   # checked-out repository, except more efficient.
@@ -194,9 +191,11 @@ then
   if [ ! -z "$TRAVIS_PULL_REQUEST" ] || [ "$TRAVIS_BRANCH" !== "false" ]
   then
     # Create a new multidev environment (or push to an existing one)
+    echo "Creating a multidev environment for $TRAVIS_SITE.dev for env: $TRAVIS_ENV."
     terminus -n build:env:create "$TRAVIS_SITE.dev" "$TRAVIS_ENV" --yes
   else
       # Push to the dev environment
+    echo "Pushing code to $TRAVIS_SITE.dev."
     terminus -n build:env:push "$TRAVIS_SITE.dev" --yes
   fi
 
