@@ -76,11 +76,10 @@ then
     cd $HOME/terminus
     composer -n require pantheon-systems/terminus
     # Install terminus plugins
-    mkdir -p $HOME/terminus-plugins
-    TERMINUS_PLUGINS_DIR=$HOME/terminus-plugins
-    composer -n create-project -d $HOME/terminus-plugins pantheon-systems/terminus-build-tools-plugin:^2.0.0-beta14
-    composer -n create-project -d $HOME/terminus-plugins pantheon-systems/terminus-composer-plugin:^1.1
-    composer -n create-project -d $HOME/terminus-plugins pantheon-systems/terminus-drupal-console-plugin:^1.1
+    mkdir -p $HOME/.terminus/plugins
+    composer -n create-project -d $HOME/.terminus/plugins pantheon-systems/terminus-build-tools-plugin:^2.0.0-beta14
+    composer -n create-project -d $HOME/.terminus/plugins pantheon-systems/terminus-composer-plugin:^1.1
+    composer -n create-project -d $HOME/.terminus/plugins pantheon-systems/terminus-drupal-console-plugin:^1.1
     terminus list
   fi
 
